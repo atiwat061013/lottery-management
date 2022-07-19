@@ -57,18 +57,19 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       customer: new FormControl('', [Validators.required]),
       checkCustomer: new FormControl(false),
       installment: new FormControl('', [Validators.required]),
+      price: new FormControl({value: 0, disabled: true}, [Validators.required]),
+      discount: new FormControl({value: 0, disabled: true}, [Validators.required]),
+      total_price: new FormControl({value: 0, disabled: true}, [Validators.required]),
     });
 
     this.formModalInstallment = this.formBuilder.group({
       installment_date: new FormControl('', [Validators.required]),
     });
 
-    await this.fetchCustomerList();
-    console.log("[ngOnInit]", await this.customerList);
+    this.fetchCustomerList();
+    console.log("[ngOnInit]", this.customerList);
 
-    await this.fetchInstallmentList();
-
-    await this.qurryBills();
+    this.fetchInstallmentList();
 
 
   }
@@ -90,7 +91,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   }
 
 
-  async fetchCustomerList() {
+ fetchCustomerList() {
     const starCountRef = ref(this.db, 'customer/');
     onValue(starCountRef, async (snapshot: any) => {
       const data = await snapshot.val();
@@ -99,15 +100,19 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       let tmpName: any = [];
       tmpName.push({
         label: 'เลือก',
-        value: '',
-        id: ''
+        name: '',
+        id: '',
+        discount: 0,
+        phone: ''
       });
 
       Object.keys(data).forEach(async (key: any, index: number) => {
         tmpName.push({
-          label: await data[key].name,
-          value: await data[key].name,
-          id: await data[key].id
+          label: data[key].name,
+          name: data[key].name,
+          id: data[key].id,
+          discount: data[key].discount,
+          phone: data[key].phone,
         });
       });
 
@@ -115,12 +120,14 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       console.log("[fetchCustomerList]", this.customerList);
 
 
-      let checkCustomerIndex = await this.customerList.findIndex((ele: any) => ele.value == localStorage.getItem("checkCustomer"));
+      let checkCustomerIndex = await this.customerList.findIndex((ele: any) => ele.name == localStorage.getItem("checkCustomer"));
       console.log("[fetchCustomerList]", "checkCustomer => " + checkCustomerIndex);
-      this.formLotteryArray.controls['customer'].setValue(this.customerList[checkCustomerIndex].value);
-      this.formLotteryArray.controls['checkCustomer'].setValue(this.customerList[checkCustomerIndex].value);
+      this.formLotteryArray.controls['customer'].setValue(this.customerList[checkCustomerIndex].name);
+      this.formLotteryArray.controls['checkCustomer'].setValue(this.customerList[checkCustomerIndex].name);
+      this.formLotteryArray.controls['discount'].setValue(this.customerList[checkCustomerIndex].discount)
 
       this.customerSelectIndex = await checkCustomerIndex;
+      this.qurryBills();
 
     });
   }
@@ -494,7 +501,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     const newPostKey = push(child(ref(this.db), 'bills')).key;
     set(ref(this.db, 'bills/' + newPostKey), {
       id: newPostKey,
-      customer_name: this.customerList[this.customerSelectIndex].value,
+      customer_name: this.customerList[this.customerSelectIndex].name,
       customer_id: this.customerList[this.customerSelectIndex].id,
       installment_date: this.installmentList[this.installmentSelectIndex].installment_date,
       installment_id: this.installmentList[this.installmentSelectIndex].id,
@@ -539,9 +546,9 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   async qurryBills() {
     console.log("[qurryBills] ", this.customerList);
     console.log("[qurryBills] ", this.customerSelectIndex);
-    console.log("[qurryBills] ", this.customerList[this.customerSelectIndex].value);
+    // console.log("[qurryBills] ", this.customerList[this.customerSelectIndex].value);
 
-    const mostViewedPosts = query(ref(this.db, 'bills'), orderByChild("customer_name"), equalTo(this.customerList[this.customerSelectIndex].value));
+    const mostViewedPosts = query(ref(this.db, 'bills'), orderByChild("customer_name"), equalTo(this.customerList[this.customerSelectIndex].name));
     onValue(mostViewedPosts, async (res) => {
       console.log("mostViewedPosts", res.val());
       let tmpBillsByName: any;
@@ -561,9 +568,9 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     console.log('[onCustomerChange] event: ', event.target.selectedIndex);
     this.customerSelectIndex = event.target.selectedIndex;
     console.log("customerSelectIndex ", this.customerSelectIndex);
-
+    this.formLotteryArray.controls['discount'].setValue(this.customerList[this.customerSelectIndex].discount);
     if (this.formLotteryArray.controls['checkCustomer'].value) {
-      localStorage.setItem("checkCustomer", this.customerList[this.customerSelectIndex]?.value);
+      localStorage.setItem("checkCustomer", this.customerList[this.customerSelectIndex]?.name);
     } else {
       localStorage.setItem("checkCustomer", "")
     }
@@ -578,9 +585,9 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     if (event.target.checked) {
       console.log("isChecked true: ", this.customerList);
       console.log("isChecked true: customerSelectIndex => ", this.customerSelectIndex);
-      console.log("isChecked true: ", this.customerList[this.customerSelectIndex]?.value);
+      console.log("isChecked true: ", this.customerList[this.customerSelectIndex]?.name);
 
-      localStorage.setItem("checkCustomer", this.customerList[this.customerSelectIndex]?.value);
+      localStorage.setItem("checkCustomer", this.customerList[this.customerSelectIndex]?.name);
     } else {
       localStorage.setItem("checkCustomer", "")
     }
@@ -610,6 +617,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
       console.log("tmpBills: ", tmpBills);
     }
+    this.formLotteryArray.controls['price'].setValue(this.billsPrice)
   }
 
   // Modal Installment

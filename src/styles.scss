@@ -10,9 +10,32 @@
 
 @import '~bootstrap/dist/css/bootstrap.min.css';
 
+:root {
+  --color-primary: #7380ec;
+  --color-danger: #ff7782;
+  --color-success: #41f1b6;
+  --color-warning: #ffbb55;
+  --color-white: #fff;
+  --color-info-light: #dce4eb;
+  --color-light: rgba(132, 139, 200, 0.18);
+  --color-primary-variant: #111e88;
+  --color-dark-variant: #677483;
+  --color-background: #f6f6f9;
+
+  --card-border-radius: 2rem;
+  --card-radius-1: 0.4rem;
+  --card-radius-2: 0.8rem;
+  --card-radius-3: 1.2rem;
+
+  --card-padding: 1.8rem;
+
+  --box-shadow: 0 2rem 3rem var(--color-light);
+}
+
 html,body {
   font-family: "Bai Jamjuree", sans-serif !important;
-  background-color: #e5e5e5 !important;
+  // background-color: #e5e5e5 !important;
+  background-color: var(--color-background);
 }
 
 
@@ -24,14 +47,14 @@ html,body {
     border-top-right-radius: 4px;
 
     .datatable-header-cell {
-      background-color: #eee !important;
+      background-color: #dce4eb !important;
       color: #000000 !important;
       font-size: 18px !important;
       font-weight: bold;
     }
   }
   .datatable-body {
-    background-color: #eee;
+    background-color: #dce4eb;
     border-bottom-right-radius: 4px !important;
     border-bottom-left-radius: 4px !important;
     .datatable-row-wrapper {
@@ -42,7 +65,7 @@ html,body {
   }
 
   .datatable-body-row:hover .datatable-row-group {
-    background-color: #eee;
+    background-color: #dce4eb;
     transition-property: background;
     transition-duration: 0.3s;
     transition-timing-function: linear;

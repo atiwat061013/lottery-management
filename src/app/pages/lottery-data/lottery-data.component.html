@@ -16,7 +16,7 @@
                     <div style="width: 80%;">
                         <select formControlName="customer" class="form-select form-select-sm"
                             aria-label=".form-select-sm example" (change)="onCustomerChange($event)">
-                            <option *ngFor="let customer of customerList; let x = index" [ngValue]="customer.value"
+                            <option *ngFor="let customer of customerList; let x = index" [ngValue]="customer.name"
                                 class="dropdown-item">
                                 {{ customer.label }}
                             </option>
@@ -149,30 +149,30 @@
                 </div>
                 <br />
                 <div style="margin-left: auto; text-align: end; justify-content: end" class="mb-3 row">
-                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="staticEmail" class="col-sm-3 col-form-label">ราคา</label>
+                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="price" class="col-sm-3 col-form-label">ราคา</label>
                     <div class="col-sm-3">
-                      <input style="text-align: end;" type="text" readonly class="form-control" id="staticEmail" value="10215">
+                      <input style="text-align: end;" type="text" class="form-control" id="price" formControlName="price">
                     </div>
                   </div>
 
                   <div style="margin-left: auto; text-align: end; justify-content: end" class="mb-3 row">
-                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="staticEmail" class="col-sm-3 col-form-label">ส่วนลด</label>
+                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="discount" class="col-sm-3 col-form-label">ส่วนลด</label>
                     <div class="col-sm-3">
-                      <input style="text-align: end;" type="text" readonly class="form-control" id="staticEmail" value="10215">
+                      <input style="text-align: end;" type="text" class="form-control" id="discount" formControlName="discount">
                     </div>
                   </div>
 
                   <div style="margin-left: auto; text-align: end; justify-content: end" class="mb-3 row">
-                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="staticEmail" class="col-sm-3 col-form-label">รวมเงินทั้งสิ้น</label>
+                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="total_price" class="col-sm-3 col-form-label">รวมเงินทั้งสิ้น</label>
                     <div class="col-sm-3">
-                      <input style="text-align: end;" type="text" readonly class="form-control" id="staticEmail" value="1000">
+                      <input style="text-align: end;" type="text" class="form-control" id="total_price" formControlName="total_price">
                     </div>
                   </div>
 
                 <!-- <br /> -->
                 <!-- <button type="button" class="btn btn-primary" (click)="addItem()">Add</button> -->
                 <div style="text-align: end;" class="col-12">
-                    <button type="submit" class="btn btn-primary" [disabled]="!formLotteryArray.valid"></button>
+                    <button type="submit" class="btn btn-primary" [disabled]="!formLotteryArray.valid">บันทึก</button>
                 </div>
                 
 
@@ -191,7 +191,6 @@
             <label class="btn btn-outline-danger" for="danger-outlined">Danger radio</label> -->
             </div>
             <div class="col-6">
-
             </div>
         </div>
     </div>
