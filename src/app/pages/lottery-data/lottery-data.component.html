@@ -172,7 +172,7 @@
                 <!-- <br /> -->
                 <!-- <button type="button" class="btn btn-primary" (click)="addItem()">Add</button> -->
                 <div style="text-align: end;" class="col-12">
-                    <button type="submit" class="btn btn-primary" [disabled]="!formLotteryArray.valid">บันทึก</button>
+                    <button type="submit" class="btn btn-primary" [disabled]="!formLotteryArray.valid"></button>
                 </div>
                 
 
@@ -191,81 +191,7 @@
             <label class="btn btn-outline-danger" for="danger-outlined">Danger radio</label> -->
             </div>
             <div class="col-6">
-                <ngx-datatable #tableTransaction class="material ngx-datatable-transactions"
-                [loadingIndicator]="isLoadingtableBills" [rows]="billsByNameList" [headerHeight]="50"
-                [footerHeight]="0" [rowHeight]="'auto'" [columnMode]="'force'">
-                <ngx-datatable-column name="stage">
-                  <ng-template ngx-datatable-header-template>
-                    <span>Stage</span>
-                  </ng-template>
-                  <ng-template ngx-datatable-cell-template let-row="row" let-value="value" let-rowIndex="rowIndex">
-                    <div class="box-step">
-                      <span class="no" *ngIf="row.status !== ''">{{
-                        rowIndex + 1
-                      }}</span>
-                      <span class="non" *ngIf="row.status == ''">{{
-                        rowIndex + 1
-                      }}</span>
-                      <span class="line" *ngIf="rowIndex + 1 !== billsByNameList.length"></span>
-                    </div>
-                  </ng-template>
-                </ngx-datatable-column>
 
-                <ngx-datatable-column name="status">
-                  <ng-template ngx-datatable-header-template>
-                    <span>Status</span>
-                  </ng-template>
-                  <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
-                    <span class="badge tag-box" [ngClass]="row.status | lowercase">{{ row.status | titlecase }}</span>
-                  </ng-template>
-                </ngx-datatable-column>
-
-                <ngx-datatable-column prop="stage_description" [sortable]="true">
-                  <ng-template ngx-datatable-header-template>
-                    <span>Stage Description</span>
-                  </ng-template>
-                </ngx-datatable-column>
-
-                <ngx-datatable-column prop="timestamp" [sortable]="true">
-                  <ng-template ngx-datatable-header-template>
-                    <span>Timestamp</span>
-                  </ng-template>
-                </ngx-datatable-column>
-
-                <ngx-datatable-column prop="problem_detail" [sortable]="true">
-                  <ng-template ngx-datatable-header-template>
-                    <span>Problem details</span>
-                  </ng-template>
-                </ngx-datatable-column>
-
-                <ngx-datatable-column prop="action_by" [sortable]="true">
-                  <ng-template ngx-datatable-header-template>
-                    <span>Action By</span>
-                  </ng-template>
-                </ngx-datatable-column>
-
-                <ngx-datatable-column name="similarity" [sortable]="false">
-                  <ng-template ngx-datatable-header-template>
-                    <span>Action / Remark</span>
-                  </ng-template>
-
-                  <ng-template class="text-center"  ngx-datatable-cell-template let-row="row" let-value="value"
-                    let-rowIndex="rowIndex">
-                    <p *ngIf="row.status == 'Rejected'" style="overflow-wrap: break-word;width:80%;">{{row.remark}}</p>
-
-                    <!-- <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="
-                        ((row.stage_description == 'Liveness check' ||
-                          row.stage_description == 'Face comparing') &&
-                          row.status == 'Error') || row.status == 'Bypass'
-                          && row.stage_description != 'Dopa check' 
-                      
-                      " data-bs-toggle="modal" data-bs-target="#modalProblem" (click)="viewBypass(rowIndex)">
-                      <em class="fa fa-search"></em>
-                    </button> -->
-                 
-                  </ng-template>
-                </ngx-datatable-column>
-              </ngx-datatable>
             </div>
         </div>
     </div>
