@@ -1,0 +1,229 @@
+<div class="box-content my-3">
+    <div class="row">
+        <div class="col-3">
+            <button type="button" class="btn btn-outline-primary btn" data-bs-toggle="modal"
+                data-bs-target="#modalCreateContect">
+                <em class="fa fa-plus"></em> เพิ่มรายชื่อ
+            </button>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <ngx-datatable class="material ngx-datatable-daily" [loadingIndicator]="isLoadingtableCustomer"
+                [rows]="customerList" [headerHeight]="50" [footerHeight]="0" [rowHeight]="'auto'"
+                [columnMode]="'force'">
+
+                <ngx-datatable-column prop="name" [sortable]="true">
+                    <ng-template ngx-datatable-header-template>
+                        <span>ชื่อลูกค้า</span>
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column prop="phone" [sortable]="true">
+                    <ng-template ngx-datatable-header-template>
+                        <span>เบอร์โทรศัพท์</span>
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column prop="discount" [sortable]="true">
+                    <ng-template ngx-datatable-header-template>
+                        <span>ส่วนลด</span>
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column prop="create_at" [sortable]="true">
+                    <ng-template ngx-datatable-header-template>
+                        <span>วันที่สร้าง</span>
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="similarity" [sortable]="false">
+                    <ng-template ngx-datatable-header-template>
+                        <span>Action / Remark</span>
+                    </ng-template>
+
+                    <ng-template class="text-center" ngx-datatable-cell-template let-row="row" let-value="value"
+                        let-rowIndex="rowIndex">
+
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#modalCreateContect" (click)="onViewCustomer(rowIndex)">
+                            <em class="fa fa-search"></em>
+                        </button>
+                    </ng-template>
+                </ngx-datatable-column>
+            </ngx-datatable>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- dsds -->
+
+<div class="modal fade" id="modalCreateContect" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-detail">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">เพิ่มรายชื่อลูกค้า</h5>
+                <button type="button" class="btn btn-close-modal" data-bs-dismiss="modal" aria-label="Close">
+                    <em class="fa-solid fa-xmark fa-xl"></em>
+                </button>
+                <button style="display: none" #createContectModalClose type="button" class="btn btn-close-modal"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="formContect" (ngSubmit)="onSubmitContect()">
+                    <div class="form-group mt-3 row">
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="name">ชื่อ</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <input type="text" class="form-control" formControlName="name" id="name"
+                                    placeholder="กรอกชื่อ" />
+                                <div class="validation-errors">
+                                    <ng-container *ngFor="let validation of validation_messages.name">
+                                        <div class="error-message"
+                                            *ngIf="formContect.get('name').hasError(validation.type) && (formContect.get('name').dirty || formContect.get('name').touched)">
+                                            {{
+                                            validation.message }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3 row">
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="name">เบอร์โทรศัพท์:</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <input type="text" class="form-control" formControlName="phone" id="phone"
+                                    placeholder="กรอกเบอร์โทร" />
+                                <div class="validation-errors">
+                                    <ng-container *ngFor="let validation of validation_messages.phone">
+                                        <div class="error-message"
+                                            *ngIf="formContect.get('phone').hasError(validation.type) && (formContect.get('phone').dirty || formContect.get('phone').touched)">
+                                            {{
+                                            validation.message }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3 row">
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="name">ธนาคาร</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <select formControlName="bank_account" class="form-select"
+                                    aria-label="Default select example">
+                                    <option *ngFor="let bank of bankAccountList" [ngValue]="bank.value">{{ bank.label }}
+                                    </option>
+                                </select>
+                                <div class="validation-errors">
+                                    <ng-container *ngFor="let validation of validation_messages.bank_account">
+                                        <div class="error-message"
+                                            *ngIf="formContect.get('bank_account').hasError(validation.type) && (formContect.get('bank_account').dirty || formContect.get('bank_account').touched)">
+                                            {{
+                                            validation.message }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3 row">
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="name">ชื่อบัญชีธนาคาร</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <input type="text" class="form-control" formControlName="bank_account_name"
+                                    id="bank_account_name" placeholder="กรอกชื่อบัญชีธนาคาร" />
+                                <div class="validation-errors">
+                                    <ng-container *ngFor="let validation of validation_messages.bank_account_name">
+                                        <div class="error-message"
+                                            *ngIf="formContect.get('bank_account_name').hasError(validation.type) && (formContect.get('bank_account_name').dirty || formContect.get('bank_account_name').touched)">
+                                            {{
+                                            validation.message }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3 row">
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="name">หมายเลขบัญชีธนาคาร</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <input type="text" class="form-control" formControlName="bank_account_number"
+                                    id="bank_account_number" placeholder="กรอกเลขบัญชีธนาคาร" />
+                                <div class="validation-errors">
+                                    <ng-container *ngFor="let validation of validation_messages.bank_account_number">
+                                        <div class="error-message"
+                                            *ngIf="formContect.get('bank_account_number').hasError(validation.type) && (formContect.get('bank_account_number').dirty || formContect.get('bank_account_number').touched)">
+                                            {{
+                                            validation.message }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3 row">
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="name">ส่วนลด</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <input type="text" class="form-control" formControlName="discount" id="discount"
+                                    placeholder="กรอกส่วนลด" />
+                                <div class="validation-errors">
+                                    <ng-container *ngFor="let validation of validation_messages.discount">
+                                        <div class="error-message"
+                                            *ngIf="formContect.get('discount').hasError(validation.type) && (formContect.get('discount').dirty || formContect.get('discount').touched)">
+                                            {{
+                                            validation.message }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3" [disabled]="!formContect.valid">
+                        บันทึก
+                    </button>
+
+                    <button type="button" class="btn btn-primary mt-3" [disabled]="!formContect.valid" (click)="onEditContect()">
+                        แก้ไข
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

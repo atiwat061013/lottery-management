@@ -1,0 +1,314 @@
+<form [formGroup]="formLotteryArray" (ngSubmit)="onSubmit()">
+    <div class="box-content my-3">
+        <div class="row">
+            <div class="col-6">
+                <div style="display: flex; gap: 20px;">
+                    <label class="form-label">ชื่อลูกค้า</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input formControlName="checkCustomer" class="form-check-input" (change)="onCheckCustomerChange($event)" type="checkbox" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            ล็อกชื่อลูกค้า
+                        </label>
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div style="width: 80%;">
+                        <select formControlName="customer" class="form-select form-select-sm"
+                            aria-label=".form-select-sm example" (change)="onCustomerChange($event)">
+                            <option *ngFor="let customer of customerList; let x = index" [ngValue]="customer.value"
+                                class="dropdown-item">
+                                {{ customer.label }}
+                            </option>
+                        </select>
+                        <div class="validation-errors">
+                            <ng-container *ngFor="let validation of validation_messages.customer">
+                                <div class="error-message"
+                                    *ngIf="formLotteryArray.get('customer').hasError(validation.type) && (formLotteryArray.get('customer').dirty || formLotteryArray.get('customer').touched)">
+                                    {{
+                                    validation.message }}
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+
+                    <div style="width: 20%;">
+                        <button type="button" class="btn btn-outline-primary btn">
+                            <em class="fa fa-address-book"></em>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <label class="form-label">งวดที่</label>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div style="width: 80%;">
+                        <select formControlName="installment" class="form-select form-select-sm"
+                            aria-label=".form-select-sm example" (change)="onInstallmentChange($event)">
+                            <option *ngFor="let installment of installmentList; let x = index"
+                                [ngValue]="installment.value" class="dropdown-item">
+                                {{ installment.label }}
+                            </option>
+                        </select>
+                        <div class="validation-errors">
+                            <ng-container *ngFor="let validation of validation_messages.installment">
+                                <div class="error-message"
+                                    *ngIf="formLotteryArray.get('installment').hasError(validation.type) && (formLotteryArray.get('installment').dirty || formLotteryArray.get('installment').touched)">
+                                    {{
+                                    validation.message }}
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div style="width: 20%;">
+                        <button type="button" class="btn btn-outline-primary btn" data-bs-toggle="modal"
+                            data-bs-target="#modalInstallment">
+                            <em class="fa fa-plus"></em>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="box-content my-3">
+        <div class="row">
+            <div class="col-6">
+
+                <div class="row mt-2">
+                    <div class="col-3">
+                        <label>หมายเลข</label>
+                    </div>
+                    <div class="col-3">
+                        <label>บน</label>
+                    </div>
+                    <div class="col-3">
+                        <label>ล่าง</label>
+                    </div>
+                    <div class="col-3">
+                        <label>โต๊ส</label>
+                    </div>
+                    <!-- <div class="col-2">
+                    <label>ลบ</label>
+                </div> -->
+                </div>
+                <div formArrayName="lotteryArray">
+                    <ng-container *ngFor="let row of f?.lotteryArray['controls']; let i = index">
+                        <div [formGroupName]="i" style="margin-bottom: 10px;">
+
+                            <div class="row mt-2">
+                                <div class="col-3">
+                                    <input #number type="text" class="form-control" id="expirt" maxlength="3"
+                                        placeholder="ตัวเลข" formControlName="number"
+                                        (keyup.enter)="onKeyupNumberEnter()" (keyup)="onChangeNumber($event, i)" />
+                                </div>
+                                <div class="col-3">
+                                    <input #upper type="text" class="form-control" id="expirt" placeholder="บน"
+                                        formControlName="upper" (keyup.enter)="onKeyupUpperEnter()"
+                                        (keyup)="onChangeUpper($event, i)" />
+                                </div>
+                                <div class="col-3">
+                                    <input #lower type="text" class="form-control" id="expirt" placeholder="ล่าง"
+                                        formControlName="lower" (keyup.enter)="onKeyupLowerEnter(i)"
+                                        (keyup)="onChangeLower($event, i)" />
+                                </div>
+                                <div class="col-3">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div>
+                                            <input #todd type="text" class="form-control" id="expirt" placeholder="โต๊ด"
+                                                formControlName="todd" (keyup.enter)="addItem()" />
+                                        </div>
+
+                                        <div>
+                                            <button type="button" class="btn btn-outline-danger btn"
+                                                (click)="removeItem(i)">
+                                                <em class="fa fa-trash"></em>
+                                            </button>
+                                        </div>
+                                    </div>
+
+
+
+
+                                </div>
+
+                            </div>
+
+                            <!-- <div class="row">
+                                <div class="col-3">
+                                    <input type="checkbox" class="btn-check" id="btn-check-outlined" autocomplete="off" formControlName="reverse">
+                                    <label class="btn btn-outline-primary" for="btn-check-outlined">Single
+                                        toggle</label><br>
+                                </div>
+                            </div> -->
+                        </div>
+                    </ng-container>
+                </div>
+                <br />
+                <div style="margin-left: auto; text-align: end; justify-content: end" class="mb-3 row">
+                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="staticEmail" class="col-sm-3 col-form-label">ราคา</label>
+                    <div class="col-sm-3">
+                      <input style="text-align: end;" type="text" readonly class="form-control" id="staticEmail" value="10215">
+                    </div>
+                  </div>
+
+                  <div style="margin-left: auto; text-align: end; justify-content: end" class="mb-3 row">
+                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="staticEmail" class="col-sm-3 col-form-label">ส่วนลด</label>
+                    <div class="col-sm-3">
+                      <input style="text-align: end;" type="text" readonly class="form-control" id="staticEmail" value="10215">
+                    </div>
+                  </div>
+
+                  <div style="margin-left: auto; text-align: end; justify-content: end" class="mb-3 row">
+                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="staticEmail" class="col-sm-3 col-form-label">รวมเงินทั้งสิ้น</label>
+                    <div class="col-sm-3">
+                      <input style="text-align: end;" type="text" readonly class="form-control" id="staticEmail" value="1000">
+                    </div>
+                  </div>
+
+                <!-- <br /> -->
+                <!-- <button type="button" class="btn btn-primary" (click)="addItem()">Add</button> -->
+                <div style="text-align: end;" class="col-12">
+                    <button type="submit" class="btn btn-primary" [disabled]="!formLotteryArray.valid">บันทึก</button>
+                </div>
+                
+
+
+                <!-- <input type="checkbox" class="btn-check" id="btn-check-outlined" autocomplete="off">
+            <label class="btn btn-outline-primary" for="btn-check-outlined">Single toggle</label><br>
+
+            <input type="checkbox" class="btn-check" id="btn-check-2-outlined" checked autocomplete="off">
+            <label class="btn btn-outline-secondary" for="btn-check-2-outlined">Checked</label><br>
+
+            <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off"
+                checked>
+            <label class="btn btn-outline-success" for="success-outlined">Checked success radio</label>
+
+            <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
+            <label class="btn btn-outline-danger" for="danger-outlined">Danger radio</label> -->
+            </div>
+            <div class="col-6">
+                <ngx-datatable #tableTransaction class="material ngx-datatable-transactions"
+                [loadingIndicator]="isLoadingtableBills" [rows]="billsByNameList" [headerHeight]="50"
+                [footerHeight]="0" [rowHeight]="'auto'" [columnMode]="'force'">
+                <ngx-datatable-column name="stage">
+                  <ng-template ngx-datatable-header-template>
+                    <span>Stage</span>
+                  </ng-template>
+                  <ng-template ngx-datatable-cell-template let-row="row" let-value="value" let-rowIndex="rowIndex">
+                    <div class="box-step">
+                      <span class="no" *ngIf="row.status !== ''">{{
+                        rowIndex + 1
+                      }}</span>
+                      <span class="non" *ngIf="row.status == ''">{{
+                        rowIndex + 1
+                      }}</span>
+                      <span class="line" *ngIf="rowIndex + 1 !== billsByNameList.length"></span>
+                    </div>
+                  </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="status">
+                  <ng-template ngx-datatable-header-template>
+                    <span>Status</span>
+                  </ng-template>
+                  <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
+                    <span class="badge tag-box" [ngClass]="row.status | lowercase">{{ row.status | titlecase }}</span>
+                  </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column prop="stage_description" [sortable]="true">
+                  <ng-template ngx-datatable-header-template>
+                    <span>Stage Description</span>
+                  </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column prop="timestamp" [sortable]="true">
+                  <ng-template ngx-datatable-header-template>
+                    <span>Timestamp</span>
+                  </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column prop="problem_detail" [sortable]="true">
+                  <ng-template ngx-datatable-header-template>
+                    <span>Problem details</span>
+                  </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column prop="action_by" [sortable]="true">
+                  <ng-template ngx-datatable-header-template>
+                    <span>Action By</span>
+                  </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="similarity" [sortable]="false">
+                  <ng-template ngx-datatable-header-template>
+                    <span>Action / Remark</span>
+                  </ng-template>
+
+                  <ng-template class="text-center"  ngx-datatable-cell-template let-row="row" let-value="value"
+                    let-rowIndex="rowIndex">
+                    <p *ngIf="row.status == 'Rejected'" style="overflow-wrap: break-word;width:80%;">{{row.remark}}</p>
+
+                    <!-- <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="
+                        ((row.stage_description == 'Liveness check' ||
+                          row.stage_description == 'Face comparing') &&
+                          row.status == 'Error') || row.status == 'Bypass'
+                          && row.stage_description != 'Dopa check' 
+                      
+                      " data-bs-toggle="modal" data-bs-target="#modalProblem" (click)="viewBypass(rowIndex)">
+                      <em class="fa fa-search"></em>
+                    </button> -->
+                 
+                  </ng-template>
+                </ngx-datatable-column>
+              </ngx-datatable>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="modal fade" id="modalInstallment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-detail">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">เพิ่มงวดที่จะขาย</h5>
+                <button type="button" class="btn btn-close-modal" data-bs-dismiss="modal" aria-label="Close">
+                    <em class="fa-solid fa-xmark fa-xl"></em>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="formModalInstallment" (ngSubmit)="onSubmitModalInstallment()">
+                    <div class="form-group mt-3 row">
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="name">งวดประจำวันที่</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <input type="date" class="form-control clsDatePicker" formControlName="installment_date"
+                                    id="txtchangelot">
+                                <div class="validation-errors">
+                                    <ng-container *ngFor="let validation of validation_messages.installment_date">
+                                        <div class="error-message"
+                                            *ngIf="formModalInstallment.get('installment_date').hasError(validation.type) && (formModalInstallment.get('installment_date').dirty || formModalInstallment.get('installment_date').touched)">
+                                            {{
+                                            validation.message }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3" [disabled]="!formModalInstallment.valid">
+                        บันทึก
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
