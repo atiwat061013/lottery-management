@@ -52,14 +52,15 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   constructor(private formBuilder: FormBuilder) { }
 
   async ngOnInit(): Promise<any> {
+
     this.formLotteryArray = this.formBuilder.group({
       lotteryArray: this.formBuilder.array([this.createItem()]),
       customer: new FormControl('', [Validators.required]),
       checkCustomer: new FormControl(false),
       installment: new FormControl('', [Validators.required]),
-      price: new FormControl({value: 0, disabled: true}, [Validators.required]),
-      discount: new FormControl({value: 0, disabled: true}, [Validators.required]),
-      total_price: new FormControl({value: 0, disabled: true}, [Validators.required]),
+      price: new FormControl('', [Validators.required]),
+      discount: new FormControl('', [Validators.required]),
+      total_price: new FormControl('', [Validators.required]),
     });
 
     this.formModalInstallment = this.formBuilder.group({
@@ -124,7 +125,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       console.log("[fetchCustomerList]", "checkCustomer => " + checkCustomerIndex);
       this.formLotteryArray.controls['customer'].setValue(this.customerList[checkCustomerIndex].name);
       this.formLotteryArray.controls['checkCustomer'].setValue(this.customerList[checkCustomerIndex].name);
-      this.formLotteryArray.controls['discount'].setValue(this.customerList[checkCustomerIndex].discount)
+      this.formLotteryArray.controls['discount'].setValue(parseInt(this.customerList[checkCustomerIndex].discount));
 
       this.customerSelectIndex = await checkCustomerIndex;
       this.qurryBills();
@@ -476,7 +477,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
   onSubmit() {
     this.formLotteryArray.markAllAsTouched();
-    console.log(this.formLotteryArray.value.lotteryArray);
+    console.log("[onSubmit] price => ",this.formLotteryArray.value);
     let tmpBills = [];
     for (let i = 0; i < this.formLotteryArray.value.lotteryArray.length - 1; i++) {
       tmpBills.push({
@@ -496,8 +497,6 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     console.log("[onSubmit] ", "installmentList => " + this.installmentList);
     console.log("[onSubmit] ", "installmentSelectIndex => " + this.installmentSelectIndex);
 
-
-
     const newPostKey = push(child(ref(this.db), 'bills')).key;
     set(ref(this.db, 'bills/' + newPostKey), {
       id: newPostKey,
@@ -505,6 +504,9 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       customer_id: this.customerList[this.customerSelectIndex].id,
       installment_date: this.installmentList[this.installmentSelectIndex].installment_date,
       installment_id: this.installmentList[this.installmentSelectIndex].id,
+      price: this.formLotteryArray.value.price,
+      discount: this.formLotteryArray.value.discount,
+      total_price: this.formLotteryArray.value.total_price,
       create_at: Date.now(),
       item_buy: this.billsArray,
     }).then((res: any) => {
@@ -569,6 +571,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     this.customerSelectIndex = event.target.selectedIndex;
     console.log("customerSelectIndex ", this.customerSelectIndex);
     this.formLotteryArray.controls['discount'].setValue(this.customerList[this.customerSelectIndex].discount);
+    this.onSumPriceBills();
     if (this.formLotteryArray.controls['checkCustomer'].value) {
       localStorage.setItem("checkCustomer", this.customerList[this.customerSelectIndex]?.name);
     } else {
@@ -601,6 +604,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   }
 
   onSumPriceBills(){
+    let discount = 0;
     let tmpBills = [];
     this.billsPrice = 0;
     for (let i = 0; i < this.formLotteryArray.value.lotteryArray.length - 1; i++) {
@@ -617,7 +621,12 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
       console.log("tmpBills: ", tmpBills);
     }
+
+    console.log("[onSumPriceBills] discount", this.formLotteryArray.controls['discount'].value);
+
+    discount = (this.billsPrice * this.formLotteryArray.controls['discount'].value)/ 100;
     this.formLotteryArray.controls['price'].setValue(this.billsPrice)
+    this.formLotteryArray.controls['total_price'].setValue(this.billsPrice - discount)
   }
 
   // Modal Installment
