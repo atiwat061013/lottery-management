@@ -1,19 +1,20 @@
 <form [formGroup]="formLotteryArray" (ngSubmit)="onSubmit()">
     <div class="box-content my-3">
         <div class="row">
-            <div class="col-6">
+            <div class="col-3">
                 <div style="display: flex; gap: 20px;">
                     <label class="form-label">ชื่อลูกค้า</label>
                     <div style="display: flex; gap: 10px;">
-                        <input formControlName="checkCustomer" class="form-check-input" (change)="onCheckCustomerChange($event)" type="checkbox" id="flexCheckDefault">
+                        <input formControlName="checkCustomer" class="form-check-input"
+                            (change)="onCheckCustomerChange($event)" type="checkbox" id="flexCheckDefault">
                         <label class="form-check-label" for="flexCheckDefault">
                             ล็อกชื่อลูกค้า
                         </label>
                     </div>
                 </div>
-                
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <div style="width: 80%;">
+
+                <div>
+                    <div class="input-group mb-3">
                         <select formControlName="customer" class="form-select form-select-sm"
                             aria-label=".form-select-sm example" (change)="onCustomerChange($event)">
                             <option *ngFor="let customer of customerList; let x = index" [ngValue]="customer.name"
@@ -30,45 +31,51 @@
                                 </div>
                             </ng-container>
                         </div>
-                    </div>
-
-                    <div style="width: 20%;">
-                        <button type="button" class="btn btn-outline-primary btn">
+                        <button class="btn btn-outline-primary" type="button" (click)="onNavigateToContect()">
                             <em class="fa fa-address-book"></em>
                         </button>
                     </div>
                 </div>
             </div>
 
+            <div class="col-2">
+                <label class="form-label">บิลย่อย</label>
+                    <!-- <select class="form-select form-select-sm"
+                    aria-label=".form-select-sm example">
+                    <option *ngFor="let bills of billsByNameList; let x = index" [ngValue]="billsByNameList.length"
+                        class="dropdown-item">
+                        {{ billsByNameList.length }}
+                    </option>
+                </select> -->
+            </div>
+
             <div class="col-6">
                 <label class="form-label">งวดที่</label>
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <div style="width: 80%;">
-                        <select formControlName="installment" class="form-select form-select-sm"
-                            aria-label=".form-select-sm example" (change)="onInstallmentChange($event)">
-                            <option *ngFor="let installment of installmentList; let x = index"
-                                [ngValue]="installment.value" class="dropdown-item">
-                                {{ installment.label }}
-                            </option>
-                        </select>
-                        <div class="validation-errors">
-                            <ng-container *ngFor="let validation of validation_messages.installment">
-                                <div class="error-message"
-                                    *ngIf="formLotteryArray.get('installment').hasError(validation.type) && (formLotteryArray.get('installment').dirty || formLotteryArray.get('installment').touched)">
-                                    {{
-                                    validation.message }}
-                                </div>
-                            </ng-container>
-                        </div>
+                <div class="input-group mb-3">
+                    <select formControlName="installment" class="form-select form-select-sm"
+                        aria-label=".form-select-sm example" (change)="onInstallmentChange($event)">
+                        <option *ngFor="let installment of installmentList; let x = index" [ngValue]="installment.value"
+                            class="dropdown-item">
+                            {{ installment.label }}
+                        </option>
+                    </select>
+                    <div class="validation-errors">
+                        <ng-container *ngFor="let validation of validation_messages.installment">
+                            <div class="error-message"
+                                *ngIf="formLotteryArray.get('installment').hasError(validation.type) && (formLotteryArray.get('installment').dirty || formLotteryArray.get('installment').touched)">
+                                {{
+                                validation.message }}
+                            </div>
+                        </ng-container>
                     </div>
-                    <div style="width: 20%;">
-                        <button type="button" class="btn btn-outline-primary btn" data-bs-toggle="modal"
-                            data-bs-target="#modalInstallment">
-                            <em class="fa fa-plus"></em>
-                        </button>
-                    </div>
+                    <button type="button" class="btn btn-outline-primary btn" data-bs-toggle="modal"
+                        data-bs-target="#modalInstallment">
+                        <em class="fa fa-plus"></em>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary">กำหนดเลขอั้น</button>
+                    <button type="button" class="btn btn-outline-primary">กำหนดวงเงิน</button>
+                    
                 </div>
-
             </div>
 
         </div>
@@ -149,32 +156,39 @@
                 </div>
                 <br />
                 <div style="margin-left: auto; text-align: end; justify-content: end" class="mb-3 row">
-                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="price" class="col-sm-3 col-form-label">ราคา</label>
+                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="price"
+                        class="col-sm-3 col-form-label">ราคา</label>
                     <div class="col-sm-3">
-                      <input style="text-align: end;" type="text" class="form-control" id="price" formControlName="price">
+                        <input style="text-align: end;" readonly type="text" class="form-control" id="price"
+                            formControlName="price">
                     </div>
-                  </div>
+                </div>
 
-                  <div style="margin-left: auto; text-align: end; justify-content: end" class="mb-3 row">
-                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="discount" class="col-sm-3 col-form-label">ส่วนลด</label>
+                <div style="margin-left: auto; text-align: end; justify-content: end" class="mb-3 row">
+                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="discount"
+                        class="col-sm-3 col-form-label">ส่วนลด</label>
                     <div class="col-sm-3">
-                      <input style="text-align: end;" type="text" class="form-control" id="discount" formControlName="discount">
+                        <input style="text-align: end;" readonly type="text" class="form-control" id="discount"
+                            formControlName="discount">
                     </div>
-                  </div>
+                </div>
 
-                  <div style="margin-left: auto; text-align: end; justify-content: end" class="mb-3 row">
-                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="total_price" class="col-sm-3 col-form-label">รวมเงินทั้งสิ้น</label>
+                <div style="margin-left: auto; text-align: end; justify-content: end" class="mb-3 row">
+                    <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="total_price"
+                        class="col-sm-3 col-form-label">รวมเงินทั้งสิ้น</label>
                     <div class="col-sm-3">
-                      <input style="text-align: end;" type="text" class="form-control" id="total_price" formControlName="total_price">
+                        <input style="text-align: end;" readonly type="text" class="form-control" id="total_price"
+                            formControlName="total_price">
                     </div>
-                  </div>
+                </div>
 
                 <!-- <br /> -->
                 <!-- <button type="button" class="btn btn-primary" (click)="addItem()">Add</button> -->
                 <div style="text-align: end;" class="col-12">
-                    <button type="button" class="btn btn-primary" [disabled]="!formLotteryArray.valid" (click)="onSubmit()">บันทึก</button>
+                    <button type="button" class="btn btn-primary" [disabled]="!formLotteryArray.valid"
+                        (click)="onSubmit()">บันทึก</button>
                 </div>
-                
+
 
 
                 <!-- <input type="checkbox" class="btn-check" id="btn-check-outlined" autocomplete="off">

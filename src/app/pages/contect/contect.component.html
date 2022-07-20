@@ -62,7 +62,7 @@
 <!-- dsds -->
 
 <div class="modal fade" id="modalCreateContect" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-detail">
+    <div class="modal-dialog modal-fullscreen modal-detail">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">เพิ่มรายชื่อลูกค้า</h5>
@@ -214,12 +214,164 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="row">
+                        <div class="col-2">
+                            <div class="form-group mt-3 row">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label for="name">อัตราจ่าย วิ่งบน</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <input type="text" class="form-control" formControlName="pay_rate_run_upper" id="pay_rate_run_upper"
+                                            placeholder="กรอกอัตราจ่าย" />
+                                        <div class="validation-errors">
+                                            <ng-container *ngFor="let validation of validation_messages.pay_rate_run_upper">
+                                                <div class="error-message"
+                                                    *ngIf="formContect.get('pay_rate_run_upper').hasError(validation.type) && (formContect.get('pay_rate_run_upper').dirty || formContect.get('pay_rate_run_upper').touched)">
+                                                    {{
+                                                    validation.message }}
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                    <button type="submit" class="btn btn-primary mt-3" [disabled]="!formContect.valid">
+                        <div class="col-2">
+                            <div class="form-group mt-3 row">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label for="name">อัตราจ่าย วิ่งล่าง</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <input type="text" class="form-control" formControlName="pay_rate_run_lower" id="pay_rate_run_lower"
+                                            placeholder="กรอกอัตราจ่าย" />
+                                        <div class="validation-errors">
+                                            <ng-container *ngFor="let validation of validation_messages.pay_rate_run_lower">
+                                                <div class="error-message"
+                                                    *ngIf="formContect.get('pay_rate_run_lower').hasError(validation.type) && (formContect.get('pay_rate_run_lower').dirty || formContect.get('pay_rate_run_lower').touched)">
+                                                    {{
+                                                    validation.message }}
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-2">
+                            <div class="form-group mt-3 row">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label for="name">อัตราจ่าย 2ตัว บน-ล่าง</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <input type="text" class="form-control" formControlName="pay_rate_two_number" id="pay_rate_two_number"
+                                            placeholder="กรอกอัตราจ่าย" />
+                                        <div class="validation-errors">
+                                            <ng-container *ngFor="let validation of validation_messages.pay_rate_two_number">
+                                                <div class="error-message"
+                                                    *ngIf="formContect.get('pay_rate_two_number').hasError(validation.type) && (formContect.get('pay_rate_two_number').dirty || formContect.get('pay_rate_two_number').touched)">
+                                                    {{
+                                                    validation.message }}
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-2">
+                            <div class="form-group mt-3 row">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label for="name">อัตราจ่าย 3 ตัวตรง</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <input type="text" class="form-control" formControlName="pay_rate_three_straight" id="pay_rate_three_straight"
+                                            placeholder="กรอกอัตราจ่าย" />
+                                        <div class="validation-errors">
+                                            <ng-container *ngFor="let validation of validation_messages.pay_rate_three_straight">
+                                                <div class="error-message"
+                                                    *ngIf="formContect.get('pay_rate_three_straight').hasError(validation.type) && (formContect.get('pay_rate_three_straight').dirty || formContect.get('pay_rate_three_straight').touched)">
+                                                    {{
+                                                    validation.message }}
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-2">
+                            <div class="form-group mt-3 row">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label for="name">อัตราจ่าย 3 ตัวโต๊ต</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <input type="text" class="form-control" formControlName="pay_rate_three_todd" id="pay_rate_three_todd"
+                                            placeholder="กรอกอัตราจ่าย" />
+                                        <div class="validation-errors">
+                                            <ng-container *ngFor="let validation of validation_messages.pay_rate_three_todd">
+                                                <div class="error-message"
+                                                    *ngIf="formContect.get('pay_rate_three_todd').hasError(validation.type) && (formContect.get('pay_rate_three_todd').dirty || formContect.get('pay_rate_three_todd').touched)">
+                                                    {{
+                                                    validation.message }}
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-2">
+                            <div class="form-group mt-3 row">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label for="name">อัตราจ่าย 3 ตัวล่าง</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <input type="text" class="form-control" formControlName="pay_rate_three_lower" id="pay_rate_three_lower"
+                                            placeholder="กรอกอัตราจ่าย" />
+                                        <div class="validation-errors">
+                                            <ng-container *ngFor="let validation of validation_messages.pay_rate_three_lower">
+                                                <div class="error-message"
+                                                    *ngIf="formContect.get('pay_rate_three_lower').hasError(validation.type) && (formContect.get('pay_rate_three_lower').dirty || formContect.get('pay_rate_three_lower').touched)">
+                                                    {{
+                                                    validation.message }}
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" *ngIf="!this.editMode" class="btn btn-primary mt-3" [disabled]="!formContect.valid">
                         บันทึก
                     </button>
 
-                    <button type="button" class="btn btn-primary mt-3" [disabled]="!formContect.valid" (click)="onEditContect()">
+                    <button type="button" *ngIf="this.editMode" class="btn btn-primary mt-3" [disabled]="!formContect.valid" (click)="onEditContect()">
                         แก้ไข
                     </button>
                 </form>

@@ -3,6 +3,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { getDatabase, ref, child, get, set, onValue, push, update, query, orderByChild, limitToLast, equalTo, orderByValue } from "firebase/database";
 import { Subscription } from 'rxjs';
 import * as md5 from 'md5';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-lottery-data',
@@ -49,7 +50,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   isLoadingtableBills: boolean = true;
   billsByNameList: any = [];
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder, private router: Router) { }
 
   async ngOnInit(): Promise<any> {
 
@@ -627,6 +628,11 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     discount = (this.billsPrice * this.formLotteryArray.controls['discount'].value)/ 100;
     this.formLotteryArray.controls['price'].setValue(this.billsPrice)
     this.formLotteryArray.controls['total_price'].setValue(this.billsPrice - discount)
+  }
+
+  onNavigateToContect() {
+    console.log("[onNavigateToContect]");
+    this.router.navigateByUrl('/contect');
   }
 
   // Modal Installment

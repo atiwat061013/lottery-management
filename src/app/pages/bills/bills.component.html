@@ -1,16 +1,28 @@
 <div class="box-header my-3">
     <div class="row">
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;" class="col-12">
-            <div class="col-3">
-                <input type="date" class="form-control clsDatePicker" value="2022-08-01" id="txtchangelot">
+            <div class="col-4">
+                <!-- <input type="date" class="form-control clsDatePicker" value="2022-08-01" id="txtchangelot"> -->
+                <label class="form-label">งวดที่</label>
+                <div>
+                    <form [formGroup]="formBills">
+                        <select formControlName="installment" class="form-select form-select-sm"
+                        aria-label=".form-select-sm example" (change)="onInstallmentChange($event)">
+                        <option *ngFor="let installment of installmentList; let x = index" [ngValue]="installment.value"
+                            class="dropdown-item">
+                            {{ installment.label }}
+                        </option>
+                    </select>
+                    </form>
+                </div>
             </div>
 
             <div>
                 <button type="button" class="btn btn-outline-primary btn">
-                <em class="fa fa-floppy-o"></em>
-            </button>
+                    <em class="fa fa-floppy-o"></em>
+                </button>
             </div>
-            
+
         </div>
     </div>
 </div>
@@ -71,8 +83,7 @@
     <div class="row mt-3">
         <div class="col-12">
             <ngx-datatable class="material ngx-datatable-daily" [loadingIndicator]="isLoadingtablebills"
-                [rows]="billsList" [headerHeight]="50" [footerHeight]="0" [rowHeight]="'auto'"
-                [columnMode]="'force'">
+                [rows]="billsList" [headerHeight]="50" [footerHeight]="0" [rowHeight]="'auto'" [columnMode]="'force'">
 
                 <ngx-datatable-column prop="customer_name" [sortable]="true">
                     <ng-template ngx-datatable-header-template>
@@ -82,15 +93,15 @@
 
                 <ngx-datatable-column prop="price" [sortable]="true">
                     <ng-template ngx-datatable-header-template>
-                        <span>ราคาบิล</span>
+                        <span>ยอดขาย</span>
                     </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column prop="discount" [sortable]="true">
+                <!-- <ngx-datatable-column prop="total_price" [sortable]="true">
                     <ng-template ngx-datatable-header-template>
-                        <span>ส่วนลด</span>
+                        <span>หลังหักส่วนลด</span>
                     </ng-template>
-                </ngx-datatable-column>
+                </ngx-datatable-column> -->
 
                 <ngx-datatable-column prop="total_price" [sortable]="true">
                     <ng-template ngx-datatable-header-template>
