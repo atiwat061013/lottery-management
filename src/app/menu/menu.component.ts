@@ -34,6 +34,12 @@ export class MenuComponent implements OnInit {
       icon: 'swap',
       child: [],
     },
+    {
+      title: 'สุ่มเลข',
+      url: 'reandomNumber',
+      icon: 'swap',
+      child: [],
+    },
   ];
 
   constructor(private router: Router) {
@@ -51,6 +57,8 @@ export class MenuComponent implements OnInit {
       this.namePage = 'Contect';
     }else if(path == 'bills'){
       this.namePage = 'Bills';
+    }else if(path == 'reandomNumber'){
+      this.namePage = 'สุ่มเลข';
     }
   }
 
@@ -64,6 +72,8 @@ export class MenuComponent implements OnInit {
       this.namePage = 'Contect';
     }else if(pathName == 'bills'){
       this.namePage = 'Bills';
+    }else if(pathName == 'reandomNumber'){
+      this.namePage = 'สุ่มเลข';
     }
   }
 

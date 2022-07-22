@@ -1,0 +1,250 @@
+<div class="box-content my-3">
+  <div class="row">
+    <div class="col-3">
+      <input
+        type="number"
+        class="form-control"
+        placeholder="กรอกจำนวนที่ต้องการสุ่ม"
+        [(ngModel)]="numRandom"
+      />
+    </div>
+    <div class="col-9">
+      <div style="display: flex; gap: 10px">
+        <button
+          type="button"
+          class="btn btn-outline-primary btn"
+          data-bs-toggle="modal"
+          data-bs-target="#modalRandom"
+        >
+          <em class="fa fa-plus"></em> เพิ่มรายชื่อ
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-primary btn"
+          (click)="onRandom()"
+          [disabled]="!(customerList.length == numRandom && customerList.length != 0 && numRandom != 0)"
+        >
+          สุ่ม
+        </button>
+        <button
+        type="button"
+        class="btn btn-outline-danger btn"
+        (click)="onReset()">
+        ล้างข้อมูล
+      </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box-content my-3">
+  <div class="row mt-3">
+    <div class="col-12">
+      <div class="row">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+          "
+        >
+          <div class="mb-3 input-box">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="ค้นหาชื่อ"
+              (keyup)="filterName($event)"
+            />
+            <div class="icon-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-outline-primary mb-3" (click)="exportToExcel()">
+            <em class="fa fa-download"></em>
+          </button>
+        </div>
+      </div>
+      <ngx-datatable
+        class="material ngx-datatable-daily"
+        #tableRandom
+        class="material ngx-datatable-daily"
+        [limit]="rowLimit"
+        [loadingIndicator]="isLoadingtableRandom"
+        [rows]="customerList"
+        [columnMode]="'force'"
+        [headerHeight]="50"
+        [footerHeight]="100"
+        [rowHeight]="'auto'"
+      >
+        <ngx-datatable-footer>
+          <ng-template
+            ngx-datatable-footer-template
+            let-rowCount="rowCount"
+            let-pageSize="pageSize"
+            let-selectedCount="selectedCount"
+            let-curPage="curPage"
+            let-offset="offset"
+          >
+            <div style="padding: 5px; width: 100%">
+              <div>
+                <strong>รวมทั้งหมด {{ rowCount | number }} คน</strong>
+              </div>
+            </div>
+            <div class="dropdown">
+              <!-- size -->
+              <button
+                style="z-index: 100"
+                class="btn btn-outline-secondary dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+              >
+                Show: {{ rowLimit }} items
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <button
+                    class="dropdown-item"
+                    type="button"
+                    *ngFor="let limit of LIMITS"
+                    (click)="limitEmp(limit.value)"
+                  >
+                    แสดง {{ limit.value }} รายการ
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <datatable-pager
+              [pagerLeftArrowIcon]="'datatable-icon-left'"
+              [pagerRightArrowIcon]="'datatable-icon-right'"
+              [pagerPreviousIcon]="'datatable-icon-prev'"
+              [pagerNextIcon]="'datatable-icon-skip'"
+              [page]="curPage"
+              [size]="pageSize"
+              [count]="rowCount"
+              [hidden]="!(rowCount / pageSize > 1)"
+              (change)="tableRandom.onFooterPage($event)"
+            >
+            </datatable-pager>
+          </ng-template>
+        </ngx-datatable-footer>
+
+        <ngx-datatable-column prop="name" [sortable]="true">
+          <ng-template ngx-datatable-header-template>
+            <span>ชื่อลูกค้า</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column prop="random_number" [sortable]="true">
+          <ng-template ngx-datatable-header-template>
+            <span>เลขที่ได้</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+      </ngx-datatable>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="modalRandom"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-detail">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">เพิ่มรายชื่อลูกค้า</h5>
+        <button
+          type="button"
+          class="btn btn-close-modal"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        >
+          <em class="fa-solid fa-xmark fa-xl"></em>
+        </button>
+        <button
+          style="display: none"
+          #createContectModalClose
+          type="button"
+          class="btn btn-close-modal"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          class="form-floating"
+          [formGroup]="formRandom"
+          (ngSubmit)="onSubmitRandom()"
+        >
+          <div class="form-group mt-3 row">
+            <div class="row">
+              <div class="col-12">
+                <label for="name">ชื่อ</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="name"
+                  id="name"
+                  placeholder="กรอกชื่อ"
+                />
+                <!-- <div class="validation-errors">
+                                    <ng-container *ngFor="let validation of validation_messages.name">
+                                        <div class="error-message"
+                                            *ngIf="formContect.get('name').hasError(validation.type) && (formContect.get('name').dirty || formContect.get('name').touched)">
+                                            {{
+                                            validation.message }}
+                                        </div>
+                                    </ng-container>
+                                </div> -->
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group mt-3 row">
+            <div class="row">
+              <div class="col-12">
+                <label for="name">จำนวน</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="count"
+                  id="bank_account_number"
+                  placeholder="กรอกจำนวน"
+                />
+                <!-- <div class="validation-errors">
+                                    <ng-container *ngFor="let validation of validation_messages.bank_account_number">
+                                        <div class="error-message"
+                                            *ngIf="formContect.get('bank_account_number').hasError(validation.type) && (formContect.get('bank_account_number').dirty || formContect.get('bank_account_number').touched)">
+                                            {{
+                                            validation.message }}
+                                        </div>
+                                    </ng-container>
+                                </div> -->
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary mt-3"
+            [disabled]="!formRandom.valid"
+          >
+            บันทึก
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

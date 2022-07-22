@@ -16,6 +16,7 @@ import { environment } from 'src/environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BillsComponent } from './pages/bills/bills.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { RandomNumberComponent } from './pages/random-number/random-number.component';
 
 const app = initializeApp(environment.firebaseConfig);
 // const app = initializeApp({
@@ -38,6 +39,7 @@ const analytics = getAnalytics(app);
     LotteryDataComponent,
     ContectComponent,
     BillsComponent,
+    RandomNumberComponent,
   ],
   imports: [
     BrowserModule,

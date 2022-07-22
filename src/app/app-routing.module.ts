@@ -5,6 +5,7 @@ import { BillsComponent } from './pages/bills/bills.component';
 import { ContectComponent } from './pages/contect/contect.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { LotteryDataComponent } from './pages/lottery-data/lottery-data.component';
+import { RandomNumberComponent } from './pages/random-number/random-number.component';
 
 const routes: Routes = [
   {
@@ -31,6 +32,10 @@ const routes: Routes = [
       {
         path: 'contect',
         component: ContectComponent
+      },
+      {
+        path: 'reandomNumber',
+        component: RandomNumberComponent
       },
     ],
   }

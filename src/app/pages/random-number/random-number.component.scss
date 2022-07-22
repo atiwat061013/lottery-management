@@ -1,0 +1,16 @@
+.box-content {
+    background: var(--color-white);
+    border-radius: 4px;
+    color: #747678;
+    padding: 16px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    .input-box {
+        position: relative;
+        width: 30%;
+        .icon-search {
+          position: absolute;
+          top: 8px;
+          right: 1rem;
+        }
+      }
+}
