@@ -36,12 +36,15 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   formLotteryArray: FormGroup | any;
   formModalInstallment: FormGroup | any;
 
+  formUnlimitedPayHalf: FormGroup | any;
+
   lotteryArray: FormArray | any;
   customerList: any = [];
   customerSelectIndex: any;
 
   installmentList: any = [];
   installmentSelectIndex: any;
+  installmentSelect: any = [];
 
   billsArray: any = [];
   billsPrice: number = 0;
@@ -66,6 +69,11 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
     this.formModalInstallment = this.formBuilder.group({
       installment_date: new FormControl('', [Validators.required]),
+    });
+
+    this.formUnlimitedPayHalf = this.formBuilder.group({
+      number_pay_half: new FormControl('', [Validators.required]),
+      check_pay_half_reverse_all: new FormControl(false),
     });
 
     this.fetchCustomerList();
@@ -93,7 +101,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   }
 
 
- fetchCustomerList() {
+  fetchCustomerList() {
     const starCountRef = ref(this.db, 'customer/');
     onValue(starCountRef, async (snapshot: any) => {
       const data = await snapshot.val();
@@ -153,7 +161,9 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
             label: "งวดประจำวันที่ " + data[key].installment_date,
             value: "งวดประจำวันที่ " + data[key].installment_date,
             id: data[key].id,
-            installment_date: data[key].installment_date
+            installment_date: data[key].installment_date,
+            create_at: data[key].create_at,
+            unlimited_pay_half: data[key].unlimited_pay_half,
           });
         });
       }
@@ -162,8 +172,6 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
       console.log("[fetchInstallmentList] data", this.installmentList);
       console.log("[fetchInstallmentList]", this.installmentList);
-
-
 
       //set last installment
       this.formLotteryArray.controls['installment'].setValue(this.installmentList[this.installmentList.length - 1].value)
@@ -478,7 +486,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
   onSubmit() {
     this.formLotteryArray.markAllAsTouched();
-    console.log("[onSubmit] price => ",this.formLotteryArray.value);
+    console.log("[onSubmit] price => ", this.formLotteryArray.value);
     let tmpBills = [];
     for (let i = 0; i < this.formLotteryArray.value.lotteryArray.length - 1; i++) {
       tmpBills.push({
@@ -599,12 +607,12 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
   onInstallmentChange(event: any) {
     console.log('[onInstallmentChange] event: ', event.target.selectedIndex);
-    this.installmentSelectIndex = event.target.selectedIndex - 1;
+    this.installmentSelectIndex = event.target.selectedIndex;
     console.log("installmentSelectIndex", this.installmentSelectIndex);
 
   }
 
-  onSumPriceBills(){
+  onSumPriceBills() {
     let discount = 0;
     let tmpBills = [];
     this.billsPrice = 0;
@@ -625,7 +633,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
     console.log("[onSumPriceBills] discount", this.formLotteryArray.controls['discount'].value);
 
-    discount = (this.billsPrice * this.formLotteryArray.controls['discount'].value)/ 100;
+    discount = (this.billsPrice * this.formLotteryArray.controls['discount'].value) / 100;
     this.formLotteryArray.controls['price'].setValue(this.billsPrice)
     this.formLotteryArray.controls['total_price'].setValue(this.billsPrice - discount)
   }
@@ -652,5 +660,120 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       console.log('error', error);
     });
   }
+
+
+
+
+  // Modal onUnlimited
+  openModalUnlimitedNumber() {
+    console.log("[onUnlimitedPayHalf]", this.installmentList[this.installmentSelectIndex]);
+    this.installmentSelect = this.installmentList[this.installmentSelectIndex].unlimited_pay_half;
+    // console.log("[onUnlimitedPayHalf] installmentSelect", this.installmentSelect);
+  }
+
+  onSaveUnlimitedPayHalf() {
+    console.log("[onUnlimitedPayHalf]", this.formUnlimitedPayHalf.controls['number_pay_half'].value);
+    console.log("[onSubmit] ", "installment_date => " + this.installmentList[this.installmentSelectIndex].installment_date);
+    console.log("[onSubmit] ", "date => " + this.installmentList[this.installmentSelectIndex].id);
+
+    let numberUnlimitedPayHalf: any[] = this.installmentList[this.installmentSelectIndex]?.unlimited_pay_half == undefined ? [] : this.installmentList[this.installmentSelectIndex]?.unlimited_pay_half;
+    numberUnlimitedPayHalf.push({
+      create_at: Date.now(),
+      number: this.formUnlimitedPayHalf.controls['number_pay_half'].value,
+      type: "จ่ายครึ่ง",
+    });
+    console.log("[onSaveUnlimitedPayHalf] number_pay_half", this.formUnlimitedPayHalf.value.number_pay_half);
+    if(this.formUnlimitedPayHalf.value.number_pay_half.length == 3 && this.formUnlimitedPayHalf.value.check_pay_half_reverse_all){
+      let numLength1 = this.formUnlimitedPayHalf.value.number_pay_half[0];
+      let numLength2 = this.formUnlimitedPayHalf.value.number_pay_half[1];
+      let numLength3 = this.formUnlimitedPayHalf.value.number_pay_half[2];
+      let sixSwap: any = [];
+      let threeSwapNumber1 = numLength1.concat(numLength2).concat(numLength3);
+      let threeSwapNumber2 = numLength2.concat(numLength1).concat(numLength3);
+      let threeSwapNumber3 = numLength3.concat(numLength2).concat(numLength1);
+      let threeSwapNumber4 = numLength1.concat(numLength3).concat(numLength2);
+      let threeSwapNumber5 = numLength2.concat(numLength3).concat(numLength1);
+      let threeSwapNumber6 = numLength3.concat(numLength1).concat(numLength2);
+
+      sixSwap.push(
+        threeSwapNumber1, threeSwapNumber2, threeSwapNumber3, threeSwapNumber4, threeSwapNumber5, threeSwapNumber6
+      )
+
+      console.log("[onSaveUnlimitedPayHalf] sixSwap => ", sixSwap);
+      for(let i = 0; i < sixSwap.length; i++){
+        numberUnlimitedPayHalf.push({
+          create_at: Date.now(),
+          number: sixSwap[i],
+          type: "จ่ายครึ่ง",
+        });
+      }
+      
+
+    }else if(this.formUnlimitedPayHalf.value.number_pay_half.length == 2 && this.formUnlimitedPayHalf.value.check_pay_half_reverse_all){
+      let numLength1 = this.formUnlimitedPayHalf.value.number_pay_half[0];
+      let numLength2 = this.formUnlimitedPayHalf.value.number_pay_half[1];
+      let twoSwap: any = [];
+      let twoSwapNumber1 = numLength1.concat(numLength2);
+      let twoSwapNumber2 = numLength2.concat(numLength1);
+      twoSwap.push(twoSwapNumber1, twoSwapNumber2)
+
+      console.log("[onSaveUnlimitedPayHalf] twoSwap => ", twoSwap);
+      for(let i = 0; i < twoSwap.length; i++){
+        numberUnlimitedPayHalf.push({
+          create_at: Date.now(),
+          number: twoSwap[i],
+          type: "จ่ายครึ่ง",
+        });
+      }
+    }
+
+    const set = new Set();
+    let uniqueNumber = numberUnlimitedPayHalf.filter((item: any, index: any) => {
+      console.log("[onSaveUnlimitedPayHalf] uniqueNumber c=> ", item.number + "index=> " + index);
+      const alreadyHas = set.has(item.number)
+      set.add(item.number)
+
+      return !alreadyHas
+    });
+    console.log("[onSaveUnlimitedPayHalf] uniqueNumber", uniqueNumber);
+
+    this.updateUnlimitedPayHalf(uniqueNumber);
+
+  }
+
+  onRemoveUnlimitedPayHalf(index: number) {
+    console.log("[onRemoveUnlimitedPayHalf] index => ", index);
+
+    const installmentAll = this.installmentList[this.installmentSelectIndex].unlimited_pay_half;
+    const indexOfObject = installmentAll.findIndex((object: any) => {
+      return object.id === index;
+    });
+
+    installmentAll.splice(indexOfObject, 1);
+
+    console.log("[onRemoveUnlimitedPayHalf] installmentSelect => ", installmentAll);
+
+    this.updateUnlimitedPayHalf(installmentAll);
+  }
+
+  updateUnlimitedPayHalf(numberUnlimitedPayHalfList: any[]) {
+    update(ref(this.db, 'installment/' + this.installmentList[this.installmentSelectIndex].id), {
+      unlimited_pay_half: numberUnlimitedPayHalfList,
+      edit_at: Date.now()
+    }).then(() => {
+      // Data saved successfully!
+      console.log('Data saved successfully!');
+      // this.createContectModalClose?.nativeElement?.click();
+      this.fetchInstallmentList();
+      this.installmentSelect = this.installmentList[this.installmentSelectIndex].unlimited_pay_half;
+      this.formUnlimitedPayHalf.reset();
+
+    }).catch((error) => {
+      // The write failed...
+      console.log('error', error);
+    });
+  }
+
+
 
 }

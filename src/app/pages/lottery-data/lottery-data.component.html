@@ -40,7 +40,7 @@
 
             <div class="col-2">
                 <label class="form-label">บิลย่อย</label>
-                    <!-- <select class="form-select form-select-sm"
+                <!-- <select class="form-select form-select-sm"
                     aria-label=".form-select-sm example">
                     <option *ngFor="let bills of billsByNameList; let x = index" [ngValue]="billsByNameList.length"
                         class="dropdown-item">
@@ -72,9 +72,10 @@
                         data-bs-target="#modalInstallment">
                         <em class="fa fa-plus"></em>
                     </button>
-                    <button type="button" class="btn btn-outline-primary">กำหนดเลขอั้น</button>
+                    <button type="button" data-bs-toggle="modal" (click)="openModalUnlimitedNumber()"
+                        data-bs-target="#modalUnlimitedNumber" class="btn btn-outline-primary">กำหนดเลขอั้น</button>
                     <button type="button" class="btn btn-outline-primary">กำหนดวงเงิน</button>
-                    
+
                 </div>
             </div>
 
@@ -247,6 +248,117 @@
                         บันทึก
                     </button>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalUnlimitedNumber" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-detail">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">เพิ่มงวดที่จะขาย</h5>
+                <button type="button" class="btn btn-close-modal" data-bs-dismiss="modal" aria-label="Close">
+                    <em class="fa-solid fa-xmark fa-xl"></em>
+                </button>
+            </div>
+            <div class="modal-body modal-unlimited-num">
+                <div class="row">
+                    <div class="col-6 my-3">
+                        <div class="card">
+                            <h5>กำหนดเลขอั้น จ่ายครึ่ง</h5>
+                            <form [formGroup]="formUnlimitedPayHalf">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" placeholder="ระบุตัวเลข"
+                                                formControlName="number_pay_half">
+                                            <button class="btn btn-outline-primary" type="button"
+                                                (click)="onSaveUnlimitedPayHalf()"
+                                                [disabled]="!formUnlimitedPayHalf.valid">บันทึก</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div style="display: flex; gap: 10px;">
+                                            <input formControlName="check_pay_half_reverse_all" class="form-check-input"
+                                                type="checkbox" id="payHalfReverseAll">
+                                            <label class="form-check-label" for="payHalfReverseAll">
+                                                กลับทุกประตู
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="row">
+                                <div class="col-12">
+                                    <ngx-datatable class="material ngx-datatable-daily" [rows]="installmentSelect"
+                                        [headerHeight]="50" [footerHeight]="0" [rowHeight]="'auto'"
+                                        [columnMode]="'force'">
+
+                                        <ngx-datatable-column prop="number" [sortable]="true">
+                                            <ng-template ngx-datatable-header-template>
+                                                <span>หมายเลข</span>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+
+                                        <ngx-datatable-column prop="type" [sortable]="true">
+                                            <ng-template ngx-datatable-header-template>
+                                                <span>ประเภท</span>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+
+                                        <ngx-datatable-column name="similarity" [sortable]="false">
+                                            <ng-template ngx-datatable-header-template>
+                                                <span>Action</span>
+                                            </ng-template>
+
+                                            <ng-template class="text-center" ngx-datatable-cell-template let-row="row"
+                                                let-value="value" let-rowIndex="rowIndex">
+
+                                                <button type="button" class="btn btn-outline-primary btn-sm"
+                                                    (click)="onRemoveUnlimitedPayHalf(rowIndex)">
+                                                    <em class="fa fa-trash"></em>
+                                                </button>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+                                    </ngx-datatable>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 my-3">
+                        <div class="card">
+                            <h5>กำหนดเลขไม่รับ (จะกรอกเข้าในระบบไม่ได้)</h5>
+                        </div>
+                    </div>
+                </div>
+                <!-- <form [formGroup]="formModalInstallment" (ngSubmit)="onSubmitModalInstallment()">
+                    <div class="form-group mt-3 row">
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="name">งวดประจำวันที่</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <input type="date" class="form-control clsDatePicker" formControlName="installment_date"
+                                    id="txtchangelot">
+                                <div class="validation-errors">
+                                    <ng-container *ngFor="let validation of validation_messages.installment_date">
+                                        <div class="error-message"
+                                            *ngIf="formModalInstallment.get('installment_date').hasError(validation.type) && (formModalInstallment.get('installment_date').dirty || formModalInstallment.get('installment_date').touched)">
+                                            {{
+                                            validation.message }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3" [disabled]="!formModalInstallment.valid">
+                        บันทึก
+                    </button>
+                </form> -->
             </div>
         </div>
     </div>
