@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { equalTo, getDatabase, onValue, orderByChild, query, ref } from 'firebase/database';
+import { AddAwardsLotteryComponent } from 'src/app/modals/add-awards-lottery/add-awards-lottery.component';
+import { DataService } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-bills',
@@ -31,20 +34,26 @@ export class BillsComponent implements OnInit {
     }
   ]
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(
+    private formBuilder: FormBuilder,
+    public modalService: NgbModal,
+    private dataService: DataService) { }
 
   ngOnInit(): void {
+    this.dataService.sendLineNotify()
     this.formBills = this.formBuilder.group({
       installment: new FormControl('', [Validators.required]),
     });
+    
 
     this.fetchInstallmentList();
 
     this.fetchBillsList(this.installmentList[this.installmentList.length - 1].installment_date);
   }
 
-  onInstallmentChange(even: any){
-    console.log("even: ", even);
+  onInstallmentChange(event: any){
+    console.log("even: ", event.target.selectedIndex);
+    this.fetchBillsList(this.installmentList[event.target.selectedIndex].installment_date);
     
 
   }
@@ -94,7 +103,12 @@ export class BillsComponent implements OnInit {
             label: "งวดประจำวันที่ " + data[key].installment_date,
             value: "งวดประจำวันที่ " + data[key].installment_date,
             id: data[key].id,
-            installment_date: data[key].installment_date
+            installment_date: data[key].installment_date,
+            create_at: data[key].create_at,
+            unlimited_pay_half: data[key].unlimited_pay_half,
+          });
+          tmpInstallment.sort((a: any, b: any) => {
+            return a.create_at - b.create_at;
           });
         });
       }
@@ -112,6 +126,22 @@ export class BillsComponent implements OnInit {
 
 
     });
+  }
+
+  openModal() {
+    const modalRef = this.modalService.open(AddAwardsLotteryComponent);
+    modalRef.componentInstance.user = {
+      name: 'Izzat Nadiri',
+      age: 26
+    };
+    modalRef.result.then((result) => {
+      if (result) {
+        console.log(result);
+      }
+    });
+    // modalRef.componentInstance.passEntry.subscribe((receivedEntry) => {
+    //   console.log(receivedEntry);
+    // })
   }
 
 }

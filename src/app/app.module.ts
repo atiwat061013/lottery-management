@@ -17,6 +17,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BillsComponent } from './pages/bills/bills.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { RandomNumberComponent } from './pages/random-number/random-number.component';
+import { AddAwardsLotteryComponent } from './modals/add-awards-lottery/add-awards-lottery.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AddInstallmentComponent } from './modals/add-installment/add-installment.component';
+import { LimitedNumberComponent } from './modals/limited-number/limited-number.component';
+import { ConfirmDialogComponent } from './modals/confirm-dialog/confirm-dialog.component';
 
 const app = initializeApp(environment.firebaseConfig);
 // const app = initializeApp({
@@ -40,6 +45,10 @@ const analytics = getAnalytics(app);
     ContectComponent,
     BillsComponent,
     RandomNumberComponent,
+    AddAwardsLotteryComponent,
+    AddInstallmentComponent,
+    LimitedNumberComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -47,7 +56,8 @@ const analytics = getAnalytics(app);
     FormsModule,
     NgxDatatableModule,
     ReactiveFormsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]

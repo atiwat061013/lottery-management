@@ -11,35 +11,35 @@ export class MenuComponent implements OnInit {
   sidebar: boolean = true;
   menuList = [
     {
-      title: 'Dashboard',
+      title: 'ภาพรวม',
       url: 'dashboard',
       icon: 'swap',
       child: [],
     },
     {
-      title: 'Bills',
+      title: 'รวมบิล',
       url: 'bills',
       icon: 'swap',
       child: [],
     },
     {
-      title: 'LotteryData',
+      title: 'รายละเอียดการขาย',
       url: 'lotterydata',
       icon: 'swap',
       child: [],
     },
     {
-      title: 'Contect',
+      title: 'รายชื่อลูกค้า',
       url: 'contect',
       icon: 'swap',
       child: [],
     },
-    {
-      title: 'สุ่มเลข',
-      url: 'reandomNumber',
-      icon: 'swap',
-      child: [],
-    },
+    // {
+    //   title: 'สุ่มเลข',
+    //   url: 'reandomNumber',
+    //   icon: 'swap',
+    //   child: [],
+    // },
   ];
 
   constructor(private router: Router) {
@@ -50,13 +50,13 @@ export class MenuComponent implements OnInit {
     let path = this.router.url.split('/')[1];
     console.log(path);
     if (path == 'lotterydata') {
-      this.namePage = 'LotteryData';
+      this.namePage = 'รายละเอียดการขาย';
     }else if(path == 'dashboard'){
       this.namePage = 'Dashboard';
     }else if(path == 'contect'){
-      this.namePage = 'Contect';
+      this.namePage = 'รายชื่อลูกค้า';
     }else if(path == 'bills'){
-      this.namePage = 'Bills';
+      this.namePage = 'รวมบิล';
     }else if(path == 'reandomNumber'){
       this.namePage = 'สุ่มเลข';
     }
@@ -64,14 +64,14 @@ export class MenuComponent implements OnInit {
 
   chahgeTitleName(path: string){
     let pathName = path.toLocaleLowerCase()
-    if (pathName == 'lotterydata') {
-      this.namePage = 'LotteryData';
-    }else if(pathName == 'dashboard'){
-      this.namePage = 'Dashboard';
-    }else if(pathName == 'contect'){
-      this.namePage = 'Contect';
-    }else if(pathName == 'bills'){
-      this.namePage = 'Bills';
+    if (pathName == 'รายละเอียดการขาย') {
+      this.namePage = 'รายละเอียดการขาย';
+    }else if(pathName == 'ภาพรวม'){
+      this.namePage = 'ภาพรวม';
+    }else if(pathName == 'รายชื่อลูกค้า'){
+      this.namePage = 'รายชื่อลูกค้า';
+    }else if(pathName == 'รวมบิล'){
+      this.namePage = 'รวมบิล';
     }else if(pathName == 'reandomNumber'){
       this.namePage = 'สุ่มเลข';
     }

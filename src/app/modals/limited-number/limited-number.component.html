@@ -1,0 +1,134 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" >เพิ่มงวดที่จะขาย</h5>
+        <button type="button" class="btn btn-close-modal" (click)="activeModal.dismiss('Cross click')">
+            <em class="fa-solid fa-xmark fa-xl"></em>
+        </button>
+    </div>
+    <div class="modal-body modal-limited-num">
+        <div class="row">
+            <div class="col-6 my-3">
+                <div class="card">
+                    <h5>กำหนดเลขอั้น จ่ายครึ่ง</h5>
+                    <form [formGroup]="formlimitedPayHalf">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" placeholder="ระบุตัวเลข"
+                                        formControlName="number_pay_half">
+                                    <button class="btn btn-outline-primary" type="button"
+                                        (click)="onSavelimitedPayHalf()"
+                                        [disabled]="!formlimitedPayHalf.valid">บันทึก</button>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div style="display: flex; gap: 10px;">
+                                    <input formControlName="check_pay_half_reverse_all" class="form-check-input"
+                                        type="checkbox" id="payHalfReverseAll">
+                                    <label class="form-check-label" for="payHalfReverseAll">
+                                        กลับทุกประตู
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row">
+                        <div class="col-12">
+                            <ngx-datatable class="material ngx-datatable-daily" [rows]="limitedPayHalfList"
+                                [headerHeight]="50" [footerHeight]="0" [rowHeight]="'auto'" [columnMode]="'force'">
+
+                                <ngx-datatable-column prop="number" [sortable]="true">
+                                    <ng-template ngx-datatable-header-template>
+                                        <span>หมายเลข</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+
+                                <ngx-datatable-column prop="type" [sortable]="true">
+                                    <ng-template ngx-datatable-header-template>
+                                        <span>ประเภท</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+
+                                <ngx-datatable-column name="similarity" [sortable]="false">
+                                    <ng-template ngx-datatable-header-template>
+                                        <span>Action</span>
+                                    </ng-template>
+
+                                    <ng-template class="text-center" ngx-datatable-cell-template let-row="row"
+                                        let-value="value" let-rowIndex="rowIndex">
+
+                                        <button type="button" class="btn btn-outline-primary btn-sm"
+                                            (click)="onRemovelimitedPayHalf(rowIndex)">
+                                            <em class="fa fa-trash"></em>
+                                        </button>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                            </ngx-datatable>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 my-3">
+                <div class="card">
+                    <h5>กำหนดเลขไม่รับ (จะกรอกเข้าในระบบไม่ได้)</h5>
+                    <form [formGroup]="formlimitedNotAccept">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" placeholder="ระบุตัวเลข"
+                                        formControlName="number_not_accept">
+                                    <button class="btn btn-outline-primary" type="button"
+                                        (click)="onSavelimitedNotAccept()"
+                                        [disabled]="!formlimitedNotAccept.valid">บันทึก</button>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div style="display: flex; gap: 10px;">
+                                    <input formControlName="check_not_accept_reverse_all" class="form-check-input"
+                                        type="checkbox" id="notAcceptReverseAll">
+                                    <label class="form-check-label" for="notAcceptReverseAll">
+                                        กลับทุกประตู
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row">
+                        <div class="col-12">
+                            <ngx-datatable class="material ngx-datatable-daily" [rows]="limitedNotAcceptList"
+                                [headerHeight]="50" [footerHeight]="0" [rowHeight]="'auto'" [columnMode]="'force'">
+
+                                <ngx-datatable-column prop="number" [sortable]="true">
+                                    <ng-template ngx-datatable-header-template>
+                                        <span>หมายเลข</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+
+                                <ngx-datatable-column prop="type" [sortable]="true">
+                                    <ng-template ngx-datatable-header-template>
+                                        <span>ประเภท</span>
+                                    </ng-template>
+                                </ngx-datatable-column>
+
+                                <ngx-datatable-column name="similarity" [sortable]="false">
+                                    <ng-template ngx-datatable-header-template>
+                                        <span>Action</span>
+                                    </ng-template>
+
+                                    <ng-template class="text-center" ngx-datatable-cell-template let-row="row"
+                                        let-value="value" let-rowIndex="rowIndex">
+
+                                        <button type="button" class="btn btn-outline-primary btn-sm"
+                                            (click)="onRemovelimitedPayHalf(rowIndex)">
+                                            <em class="fa fa-trash"></em>
+                                        </button>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                            </ngx-datatable>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

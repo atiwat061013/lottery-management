@@ -6,13 +6,12 @@
                     <label class="form-label">ชื่อลูกค้า</label>
                     <div style="display: flex; gap: 10px;">
                         <input formControlName="checkCustomer" class="form-check-input"
-                            (change)="onCheckCustomerChange($event)" type="checkbox" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
+                            (change)="onCheckCustomerChange($event)" type="checkbox" id="checkCustomer">
+                        <label class="form-check-label" for="checkCustomer">
                             ล็อกชื่อลูกค้า
                         </label>
                     </div>
                 </div>
-
                 <div>
                     <div class="input-group mb-3">
                         <select formControlName="customer" class="form-select form-select-sm"
@@ -50,13 +49,22 @@
             </div>
 
             <div class="col-6">
-                <label class="form-label">งวดที่</label>
+                <div style="display: flex; gap: 20px;">
+                    <label class="form-label">งวด</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input formControlName="checkInstallment" class="form-check-input"
+                            (change)="onCheckInstallmentChange($event)" type="checkbox" id="checkInstallment">
+                        <label class="form-check-label" for="checkInstallment">
+                            ล็อกงวด
+                        </label>
+                    </div>
+                </div>
                 <div class="input-group mb-3">
                     <select formControlName="installment" class="form-select form-select-sm"
                         aria-label=".form-select-sm example" (change)="onInstallmentChange($event)">
                         <option *ngFor="let installment of installmentList; let x = index" [ngValue]="installment.value"
                             class="dropdown-item">
-                            {{ installment.label }}
+                            <span>{{ installment.label }}</span>
                         </option>
                     </select>
                     <div class="validation-errors">
@@ -68,12 +76,13 @@
                             </div>
                         </ng-container>
                     </div>
-                    <button type="button" class="btn btn-outline-primary btn" data-bs-toggle="modal"
-                        data-bs-target="#modalInstallment">
+                    <button type="button" class="btn btn-outline-primary btn" (click)="onAddInstallment()">
                         <em class="fa fa-plus"></em>
                     </button>
-                    <button type="button" data-bs-toggle="modal" (click)="openModalUnlimitedNumber()"
-                        data-bs-target="#modalUnlimitedNumber" class="btn btn-outline-primary">กำหนดเลขอั้น</button>
+                    <button type="button" class="btn btn-outline-primary btn" (click)="onRemoveInstallment()">
+                        <em class="fa fa-minus"></em>
+                    </button>
+                    <button type="button" data-bs-toggle="modal" (click)="openModallimitedNumber()" class="btn btn-outline-primary">กำหนดเลขอั้น</button>
                     <button type="button" class="btn btn-outline-primary">กำหนดวงเงิน</button>
 
                 </div>
@@ -87,7 +96,7 @@
             <div class="col-6">
 
                 <div class="row mt-2">
-                    <div class="col-3">
+                    <div class="col-2">
                         <label>หมายเลข</label>
                     </div>
                     <div class="col-3">
@@ -96,7 +105,7 @@
                     <div class="col-3">
                         <label>ล่าง</label>
                     </div>
-                    <div class="col-3">
+                    <div class="col-4">
                         <label>โต๊ส</label>
                     </div>
                     <!-- <div class="col-2">
@@ -108,7 +117,7 @@
                         <div [formGroupName]="i" style="margin-bottom: 10px;">
 
                             <div class="row mt-2">
-                                <div class="col-3">
+                                <div class="col-2">
                                     <input #number type="text" class="form-control" id="expirt" maxlength="3"
                                         placeholder="ตัวเลข" formControlName="number"
                                         (keyup.enter)="onKeyupNumberEnter()" (keyup)="onChangeNumber($event, i)" />
@@ -123,7 +132,7 @@
                                         formControlName="lower" (keyup.enter)="onKeyupLowerEnter(i)"
                                         (keyup)="onChangeLower($event, i)" />
                                 </div>
-                                <div class="col-3">
+                                <div class="col-4">
                                     <div style="display: flex; align-items: center; gap: 10px;">
                                         <div>
                                             <input #todd type="text" class="form-control" id="expirt" placeholder="โต๊ด"
@@ -167,7 +176,7 @@
 
                 <div style="margin-left: auto; text-align: end; justify-content: end" class="mb-3 row">
                     <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="discount"
-                        class="col-sm-3 col-form-label">ส่วนลด</label>
+                        class="col-sm-3 col-form-label">ส่วนลด <span class="fa fa-info-circle" data-toggle="tooltip" data-placement="bottom" [title]="discountHtml"></span></label>
                     <div class="col-sm-3">
                         <input style="text-align: end;" readonly type="text" class="form-control" id="discount"
                             formControlName="discount">
@@ -182,184 +191,62 @@
                             formControlName="total_price">
                     </div>
                 </div>
-
-                <!-- <br /> -->
-                <!-- <button type="button" class="btn btn-primary" (click)="addItem()">Add</button> -->
-                <div style="text-align: end;" class="col-12">
+                <div *ngIf="!showViewbills" style="text-align: end;" class="col-12">
                     <button type="button" class="btn btn-primary" [disabled]="!formLotteryArray.valid"
                         (click)="onSubmit()">บันทึก</button>
                 </div>
+                <div *ngIf="showViewbills" style="text-align: end;" class="col-12">
+                    <button type="button" class="btn btn-primary" [disabled]="!formLotteryArray.valid"
+                        (click)="onDelete()">ลบ</button>
+                    <button type="button" class="btn btn-primary" [disabled]="!formLotteryArray.valid"
+                        (click)="onEdit()">แก้ไข</button>
+                </div>
 
-
-
-                <!-- <input type="checkbox" class="btn-check" id="btn-check-outlined" autocomplete="off">
-            <label class="btn btn-outline-primary" for="btn-check-outlined">Single toggle</label><br>
-
-            <input type="checkbox" class="btn-check" id="btn-check-2-outlined" checked autocomplete="off">
-            <label class="btn btn-outline-secondary" for="btn-check-2-outlined">Checked</label><br>
-
-            <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off"
-                checked>
-            <label class="btn btn-outline-success" for="success-outlined">Checked success radio</label>
-
-            <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
-            <label class="btn btn-outline-danger" for="danger-outlined">Danger radio</label> -->
             </div>
             <div class="col-6">
+                <ngx-datatable class="material ngx-datatable-lottery"
+                [rows]="billsByNameList" [headerHeight]="50" [footerHeight]="0" [rowHeight]="'auto'" [columnMode]="'force'">
+
+                <ngx-datatable-column prop="customer_name" [sortable]="true">
+                    <ng-template ngx-datatable-header-template>
+                        <span>ชื่อลูกค้า</span>
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column prop="price" [sortable]="true">
+                    <ng-template ngx-datatable-header-template>
+                        <span>ยอดขาย</span>
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column prop="total_price" [sortable]="true">
+                    <ng-template ngx-datatable-header-template>
+                        <span>หลังหักส่วนลด</span>
+                    </ng-template>
+                </ngx-datatable-column>
+
+
+                <ngx-datatable-column prop="status" [sortable]="true">
+                    <ng-template ngx-datatable-header-template>
+                        <span>สถานะบิล</span>
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="similarity" [sortable]="false">
+                    <ng-template ngx-datatable-header-template>
+                        <!-- <span>Action / Remark</span> -->
+                    </ng-template>
+
+                    <ng-template class="text-center" ngx-datatable-cell-template let-row="row" let-value="value"
+                        let-rowIndex="rowIndex">
+
+                        <button type="button" class="btn btn-outline-primary btn-sm" (click)="onViewbills(rowIndex)">
+                            <em class="fa fa-search"></em>
+                        </button>
+                    </ng-template>
+                </ngx-datatable-column>
+            </ngx-datatable>
             </div>
         </div>
     </div>
 </form>
-
-<div class="modal fade" id="modalInstallment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-detail">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">เพิ่มงวดที่จะขาย</h5>
-                <button type="button" class="btn btn-close-modal" data-bs-dismiss="modal" aria-label="Close">
-                    <em class="fa-solid fa-xmark fa-xl"></em>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form [formGroup]="formModalInstallment" (ngSubmit)="onSubmitModalInstallment()">
-                    <div class="form-group mt-3 row">
-                        <div class="row">
-                            <div class="col-12">
-                                <label for="name">งวดประจำวันที่</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <input type="date" class="form-control clsDatePicker" formControlName="installment_date"
-                                    id="txtchangelot">
-                                <div class="validation-errors">
-                                    <ng-container *ngFor="let validation of validation_messages.installment_date">
-                                        <div class="error-message"
-                                            *ngIf="formModalInstallment.get('installment_date').hasError(validation.type) && (formModalInstallment.get('installment_date').dirty || formModalInstallment.get('installment_date').touched)">
-                                            {{
-                                            validation.message }}
-                                        </div>
-                                    </ng-container>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-3" [disabled]="!formModalInstallment.valid">
-                        บันทึก
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="modalUnlimitedNumber" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen modal-detail">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">เพิ่มงวดที่จะขาย</h5>
-                <button type="button" class="btn btn-close-modal" data-bs-dismiss="modal" aria-label="Close">
-                    <em class="fa-solid fa-xmark fa-xl"></em>
-                </button>
-            </div>
-            <div class="modal-body modal-unlimited-num">
-                <div class="row">
-                    <div class="col-6 my-3">
-                        <div class="card">
-                            <h5>กำหนดเลขอั้น จ่ายครึ่ง</h5>
-                            <form [formGroup]="formUnlimitedPayHalf">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="input-group mb-3">
-                                            <input type="text" class="form-control" placeholder="ระบุตัวเลข"
-                                                formControlName="number_pay_half">
-                                            <button class="btn btn-outline-primary" type="button"
-                                                (click)="onSaveUnlimitedPayHalf()"
-                                                [disabled]="!formUnlimitedPayHalf.valid">บันทึก</button>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div style="display: flex; gap: 10px;">
-                                            <input formControlName="check_pay_half_reverse_all" class="form-check-input"
-                                                type="checkbox" id="payHalfReverseAll">
-                                            <label class="form-check-label" for="payHalfReverseAll">
-                                                กลับทุกประตู
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                            <div class="row">
-                                <div class="col-12">
-                                    <ngx-datatable class="material ngx-datatable-daily" [rows]="installmentSelect"
-                                        [headerHeight]="50" [footerHeight]="0" [rowHeight]="'auto'"
-                                        [columnMode]="'force'">
-
-                                        <ngx-datatable-column prop="number" [sortable]="true">
-                                            <ng-template ngx-datatable-header-template>
-                                                <span>หมายเลข</span>
-                                            </ng-template>
-                                        </ngx-datatable-column>
-
-                                        <ngx-datatable-column prop="type" [sortable]="true">
-                                            <ng-template ngx-datatable-header-template>
-                                                <span>ประเภท</span>
-                                            </ng-template>
-                                        </ngx-datatable-column>
-
-                                        <ngx-datatable-column name="similarity" [sortable]="false">
-                                            <ng-template ngx-datatable-header-template>
-                                                <span>Action</span>
-                                            </ng-template>
-
-                                            <ng-template class="text-center" ngx-datatable-cell-template let-row="row"
-                                                let-value="value" let-rowIndex="rowIndex">
-
-                                                <button type="button" class="btn btn-outline-primary btn-sm"
-                                                    (click)="onRemoveUnlimitedPayHalf(rowIndex)">
-                                                    <em class="fa fa-trash"></em>
-                                                </button>
-                                            </ng-template>
-                                        </ngx-datatable-column>
-                                    </ngx-datatable>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 my-3">
-                        <div class="card">
-                            <h5>กำหนดเลขไม่รับ (จะกรอกเข้าในระบบไม่ได้)</h5>
-                        </div>
-                    </div>
-                </div>
-                <!-- <form [formGroup]="formModalInstallment" (ngSubmit)="onSubmitModalInstallment()">
-                    <div class="form-group mt-3 row">
-                        <div class="row">
-                            <div class="col-12">
-                                <label for="name">งวดประจำวันที่</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <input type="date" class="form-control clsDatePicker" formControlName="installment_date"
-                                    id="txtchangelot">
-                                <div class="validation-errors">
-                                    <ng-container *ngFor="let validation of validation_messages.installment_date">
-                                        <div class="error-message"
-                                            *ngIf="formModalInstallment.get('installment_date').hasError(validation.type) && (formModalInstallment.get('installment_date').dirty || formModalInstallment.get('installment_date').touched)">
-                                            {{
-                                            validation.message }}
-                                        </div>
-                                    </ng-container>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-3" [disabled]="!formModalInstallment.valid">
-                        บันทึก
-                    </button>
-                </form> -->
-            </div>
-        </div>
-    </div>
-</div>

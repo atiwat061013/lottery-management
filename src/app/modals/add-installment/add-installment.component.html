@@ -1,0 +1,38 @@
+
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">เพิ่มงวดที่จะขาย</h5>
+            <button type="button" class="btn btn-close-modal" (click)="activeModal.dismiss('Cross click')">
+                <em class="fa-solid fa-xmark fa-xl"></em>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="formModalInstallment" (ngSubmit)="onSubmitModalInstallment()">
+                <div class="form-group mt-3 row">
+                    <div class="row">
+                        <div class="col-12">
+                            <label for="name">งวดประจำวันที่</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <input type="date" class="form-control clsDatePicker" formControlName="installment_date"
+                                id="txtchangelot">
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.installment_date">
+                                    <div class="error-message"
+                                        *ngIf="formModalInstallment.get('installment_date').hasError(validation.type) && (formModalInstallment.get('installment_date').dirty || formModalInstallment.get('installment_date').touched)">
+                                        {{
+                                        validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3" [disabled]="!formModalInstallment.valid">
+                    บันทึก
+                </button>
+            </form>
+        </div>
+    </div>

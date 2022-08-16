@@ -1,9 +1,13 @@
 import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { getDatabase, ref, child, get, set, onValue, push, update, query, orderByChild, limitToLast, equalTo, orderByValue } from "firebase/database";
+import { getDatabase, ref, child, get, set, onValue, push, update, query, orderByChild, limitToLast, equalTo, orderByValue, remove } from "firebase/database";
 import { Subscription } from 'rxjs';
 import * as md5 from 'md5';
 import { Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AddInstallmentComponent } from 'src/app/modals/add-installment/add-installment.component';
+import { LimitedNumberComponent } from 'src/app/modals/limited-number/limited-number.component';
+import { ConfirmDialogComponent } from 'src/app/modals/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-lottery-data',
@@ -34,9 +38,6 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   };
 
   formLotteryArray: FormGroup | any;
-  formModalInstallment: FormGroup | any;
-
-  formUnlimitedPayHalf: FormGroup | any;
 
   lotteryArray: FormArray | any;
   customerList: any = [];
@@ -48,12 +49,22 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
   billsArray: any = [];
   billsPrice: number = 0;
+  billsRunNumberPrice: number = 0;
+  discountForCustomer: number = 0;
+  discountHtml: string = "";
 
   //data table
   isLoadingtableBills: boolean = true;
   billsByNameList: any = [];
 
-  constructor(private formBuilder: FormBuilder, private router: Router) { }
+  showViewbills: boolean = false;
+  billsByNameInView: any = [];
+  
+
+  constructor(
+    private formBuilder: FormBuilder, 
+    private router: Router,
+    public modalService: NgbModal) { }
 
   async ngOnInit(): Promise<any> {
 
@@ -61,19 +72,11 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       lotteryArray: this.formBuilder.array([this.createItem()]),
       customer: new FormControl('', [Validators.required]),
       checkCustomer: new FormControl(false),
+      checkInstallment: new FormControl(false),
       installment: new FormControl('', [Validators.required]),
       price: new FormControl('', [Validators.required]),
       discount: new FormControl('', [Validators.required]),
       total_price: new FormControl('', [Validators.required]),
-    });
-
-    this.formModalInstallment = this.formBuilder.group({
-      installment_date: new FormControl('', [Validators.required]),
-    });
-
-    this.formUnlimitedPayHalf = this.formBuilder.group({
-      number_pay_half: new FormControl('', [Validators.required]),
-      check_pay_half_reverse_all: new FormControl(false),
     });
 
     this.fetchCustomerList();
@@ -82,6 +85,10 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     this.fetchInstallmentList();
 
 
+  }
+
+  ngAfterViewChecked() {
+    setTimeout(() => { window.dispatchEvent(new Event('resize'));}, 250)
   }
 
   ngAfterViewInit() {
@@ -134,7 +141,9 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       console.log("[fetchCustomerList]", "checkCustomer => " + checkCustomerIndex);
       this.formLotteryArray.controls['customer'].setValue(this.customerList[checkCustomerIndex].name);
       this.formLotteryArray.controls['checkCustomer'].setValue(this.customerList[checkCustomerIndex].name);
-      this.formLotteryArray.controls['discount'].setValue(parseInt(this.customerList[checkCustomerIndex].discount));
+      this.discountForCustomer = parseInt(this.customerList[checkCustomerIndex].discount);
+      this.discountHtml = this.discountForCustomer.toString();
+      // this.formLotteryArray.controls['discount'].setValue(parseInt(this.customerList[checkCustomerIndex].discount));
 
       this.customerSelectIndex = await checkCustomerIndex;
       this.qurryBills();
@@ -146,7 +155,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     const starCountRef = query(ref(this.db, 'installment'), orderByChild('create_at'));
     onValue(starCountRef, async (snapshot) => {
       const data = await snapshot.val();
-      console.log("data", data);
+      console.log("[fetchInstallmentList] data", data);
 
       let tmpInstallment: any = [];
       tmpInstallment.push({
@@ -163,21 +172,30 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
             id: data[key].id,
             installment_date: data[key].installment_date,
             create_at: data[key].create_at,
-            unlimited_pay_half: data[key].unlimited_pay_half,
+            limited_pay_half: data[key].limited_pay_half,
+            limited_not_accept: data[key].limited_not_accept,
+          });
+          tmpInstallment.sort((a: any, b: any) => {
+            return a.create_at - b.create_at;
           });
         });
       }
 
       this.installmentList = tmpInstallment;
 
-      console.log("[fetchInstallmentList] data", this.installmentList);
       console.log("[fetchInstallmentList]", this.installmentList);
-
-      //set last installment
-      this.formLotteryArray.controls['installment'].setValue(this.installmentList[this.installmentList.length - 1].value)
-      this.installmentSelectIndex = this.installmentList.length - 1
-
-
+      if(localStorage.getItem("checkInstallment") == ""){
+        //set last installment
+        this.formLotteryArray.controls['installment'].setValue(this.installmentList[this.installmentList.length - 1].value)
+        this.installmentSelectIndex = this.installmentList.length - 1
+      }else {
+        let checkInstallmentIndex = await this.installmentList.findIndex((ele: any) => ele.value == localStorage.getItem("checkInstallment"));
+        console.log("[fetchInstallmentList]", "checkInstallment => " + checkInstallmentIndex);
+        console.log("[fetchInstallmentList] vvvvvvvv", this.installmentList[checkInstallmentIndex]?.value);
+        this.formLotteryArray.controls['installment'].setValue(this.installmentList[checkInstallmentIndex]?.value == undefined ? "" : this.installmentList[checkInstallmentIndex]?.value);
+        this.formLotteryArray.controls['checkInstallment'].setValue(this.installmentList[checkInstallmentIndex]?.value);
+        this.installmentSelectIndex = await checkInstallmentIndex;
+      }
     });
   }
 
@@ -225,7 +243,6 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
   onChangeNumber(event: any, index: number) {
     console.log('[onChangeNumber] event: ', event.target.value);
-    let personnalId = event.target.value;
 
     if (event.target.value.length == 1 || event.target.value.length == 2 || event.target.value.length == 0) {
       this.formLotteryArray.get("lotteryArray").at(index).get("todd").disable();
@@ -277,7 +294,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
                   number: new FormControl({ value: uniqueChars[i], disabled: false }),
                   upper: new FormControl(upperPrice),
                   lower: new FormControl(''),
-                  todd: new FormControl({ value: '', disabled: true })
+                  todd: new FormControl({ value: '', disabled: false })
                 }));
               }
             }
@@ -310,7 +327,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
                 number: new FormControl({ value: sixSwap[i], disabled: false }),
                 upper: new FormControl(upperPrice),
                 lower: new FormControl(''),
-                todd: new FormControl({ value: '', disabled: true })
+                todd: new FormControl({ value: '', disabled: false })
               }));
             }
           }
@@ -320,7 +337,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
         }
 
       }
-    } else {
+    } else if(this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length == 2) {
       if (event.key == "+") {
         let numLength1 = this.formLotteryArray.get("lotteryArray").at(index).get("number").value[0];
         let numLength2 = this.formLotteryArray.get("lotteryArray").at(index).get("number").value[1];
@@ -353,6 +370,10 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
           this.addItem();
         }
 
+      }
+    } else if(this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length == 1) {
+      if (event.key == "+") {
+        this.formLotteryArray.get("lotteryArray").at(index).get("upper").setValue(numberUpper.substring(0, numberUpper.length - 1));
       }
     }
 
@@ -401,7 +422,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
                   number: new FormControl({ value: uniqueChars[i], disabled: false }),
                   upper: new FormControl(upperPrice),
                   lower: new FormControl(lowerPrice),
-                  todd: new FormControl({ value: '', disabled: true })
+                  todd: new FormControl({ value: '', disabled: false })
                 }));
               }
             }
@@ -433,7 +454,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
                 number: new FormControl({ value: sixSwap[i], disabled: false }),
                 upper: new FormControl(upperPrice),
                 lower: new FormControl(lowerPrice),
-                todd: new FormControl({ value: '', disabled: true })
+                todd: new FormControl({ value: '', disabled: false })
               }));
             }
             this.addItem();
@@ -441,7 +462,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
         }
       }
-    } else {
+    } else if(this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length == 2) {
       if (event.key == "+") {
         let numLength1 = this.formLotteryArray.get("lotteryArray").at(index).get("number").value[0];
         let numLength2 = this.formLotteryArray.get("lotteryArray").at(index).get("number").value[1];
@@ -475,12 +496,19 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
           this.addItem();
         }
       }
+    } else if(this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length == 1){
+      if (event.key == "+") {
+        this.formLotteryArray.get("lotteryArray").at(index).get("lower").setValue(numberLower.substring(0, numberLower.length - 1));
+      }
     }
 
   }
 
   removeItem(idx: number): void {
-    (this.f['lotteryArray'] as FormArray).removeAt(idx);
+    console.log("[removeItem] lotteryArray.length", this.formLotteryArray.value.lotteryArray.length);
+    if(this.formLotteryArray.value.lotteryArray.length > 1){
+      (this.f['lotteryArray'] as FormArray).removeAt(idx);
+    }
     this.onSumPriceBills();
   }
 
@@ -517,30 +545,77 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       discount: this.formLotteryArray.value.discount,
       total_price: this.formLotteryArray.value.total_price,
       create_at: Date.now(),
+      status: "รอผล",
       item_buy: this.billsArray,
     }).then((res: any) => {
       // Data saved successfully!
       console.log('Data saved successfully! res=> ', res);
-
-      // update(ref(this.db, 'installment/'+ "c450b42843e0291b8cfee0dc3d79700d"), {
-      //   bills: {newPostKey,}
-      // }).then((res: any) => {
-      //     // Data saved successfully!
-      //     console.log('Data saved successfully! res=> ', res);
-
-
-
-
-      //   }).catch((error) => {
-      //     // The write failed...
-      //     console.log('error', error);
-      //   });
+      this.lotteryArray.clear();
+      this.addItem();
 
     }).catch((error) => {
       // The write failed...
       console.log('error', error);
     });
 
+
+  }
+
+  onEdit(){
+    console.log("[onEdit] billsByNameInView=> ", this.billsByNameInView);
+    let tmpBills = [];
+    for (let i = 0; i < this.formLotteryArray.value.lotteryArray.length - 1; i++) {
+      tmpBills.push({
+        number: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].number),
+        upper: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].upper),
+        lower: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].lower),
+        todd: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd)
+      });
+    }
+    this.billsArray = tmpBills;
+
+    console.log("[onSubmit] billsArray", this.billsArray);
+    update(ref(this.db, 'bills/' + this.billsByNameInView.id), {
+      item_buy: this.billsArray,
+      price: this.formLotteryArray.value.price,
+      discount: this.formLotteryArray.value.discount,
+      total_price: this.formLotteryArray.value.total_price,
+      edit_at: Date.now()
+    }).then(() => {
+      // Data saved successfully!
+      console.log('Data saved successfully!');
+      this.showViewbills = false;
+      this.lotteryArray.clear();
+      this.addItem();
+    }).catch((error) => {
+      // The write failed...
+      this.showViewbills = false;
+      console.log('error', error);
+    });
+    
+  }
+
+  onDelete(){
+    console.log("[onDelete]");
+    const modalConfirmRef = this.modalService.open(ConfirmDialogComponent, { centered: true });
+    modalConfirmRef.componentInstance.text = {
+      header: "ต้องการลบข้อมูล",
+      message: "ต้องการลบบิลใช่หรือไม่"
+    }
+    modalConfirmRef.result.then((result) => {
+      console.log("result: ", result);
+      if(result == "confirm"){
+        remove(ref(this.db, 'bills/'+this.billsByNameInView.id)).then(() => {
+          console.log('Data remove successfully!');
+          this.showViewbills = false;
+          this.lotteryArray.clear();
+          this.addItem();
+        }).catch((err: any) => {
+          this.showViewbills = false;
+          console.log('err', err);
+        })
+      }
+    });
 
   }
 
@@ -575,11 +650,58 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     });
   }
 
+  onViewbills(index: any){
+    console.log("[onViewbills] index => ", index);
+    console.log("[onViewbills] billsByNameList => ", this.billsByNameList[index]);
+    console.log("[onViewbills] billsByNameList item_buy => ", this.billsByNameList[index].item_buy);
+    this.billsByNameInView = this.billsByNameList[index];
+    this.showViewbills = true;
+
+    if(this.lotteryArray?.length != undefined){
+      this.lotteryArray.clear();
+    }
+    
+    let itemBuy = this.billsByNameList[index].item_buy;
+
+    this.lotteryArray = this.f['lotteryArray'] as FormArray;
+    (this.f['lotteryArray'] as FormArray).removeAt(0);
+
+    for(let i = 0; i < itemBuy.length; i++){
+      console.log("[onViewbills] index => ", itemBuy[i].lower);
+      this.lotteryArray.push(this.formBuilder.group({
+        number: new FormControl(itemBuy[i].number),
+        upper: new FormControl(itemBuy[i].upper),
+        lower: new FormControl(itemBuy[i].lower),
+        todd: new FormControl(itemBuy[i].todd),
+      }));
+    }
+    this.addItem();
+    // let tmpBills = [];
+    // this.billsPrice = 0;
+    // for (let i = 0; i < this.formLotteryArray.value.lotteryArray.length - 1; i++) {
+    //   tmpBills.push({
+    //     number: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].number),
+    //     upper: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].upper),
+    //     lower: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].lower),
+    //     todd: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd)
+    //   });
+
+    //   console.log("billsPrice: ", this.billsPrice);
+    //   this.billsPrice = this.billsPrice + parseInt(this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].upper)) + parseInt(this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].lower)) + parseInt(this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd));
+    //   console.log("billsPrice: ", this.billsPrice);
+
+    //   console.log("tmpBills: ", tmpBills);
+    // }
+    
+  }
+
   onCustomerChange(event: any) {
     console.log('[onCustomerChange] event: ', event.target.selectedIndex);
     this.customerSelectIndex = event.target.selectedIndex;
     console.log("customerSelectIndex ", this.customerSelectIndex);
-    this.formLotteryArray.controls['discount'].setValue(this.customerList[this.customerSelectIndex].discount);
+    this.discountForCustomer = parseInt(this.customerList[this.customerSelectIndex].discount);
+    this.discountHtml = this.discountForCustomer.toString();
+    // this.formLotteryArray.controls['discount'].setValue(this.customerList[this.customerSelectIndex].discount);
     this.onSumPriceBills();
     if (this.formLotteryArray.controls['checkCustomer'].value) {
       localStorage.setItem("checkCustomer", this.customerList[this.customerSelectIndex]?.name);
@@ -605,37 +727,86 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     }
   }
 
+  onCheckInstallmentChange(event: any) {
+    console.log('[onCheckInstallmentChange] event: ', event.target.checked);
+    if (event.target.checked) {
+      console.log("isChecked true: ", this.installmentList);
+      console.log("isChecked true: customerSelectIndex => ", this.installmentSelectIndex);
+      console.log("isChecked true: ", this.installmentList[this.installmentSelectIndex]?.value);
+
+      localStorage.setItem("checkInstallment", this.installmentList[this.installmentSelectIndex]?.value);
+    }else {
+      localStorage.setItem("checkInstallment", "")
+    }
+  }
+
   onInstallmentChange(event: any) {
     console.log('[onInstallmentChange] event: ', event.target.selectedIndex);
     this.installmentSelectIndex = event.target.selectedIndex;
     console.log("installmentSelectIndex", this.installmentSelectIndex);
+    this.qurryBills();
+    if (this.formLotteryArray.controls['checkInstallment'].value) {
+      localStorage.setItem("checkInstallment", this.installmentList[this.installmentSelectIndex]?.value);
+    } else {
+      localStorage.setItem("checkInstallment", "")
+    }
+
 
   }
 
   onSumPriceBills() {
-    let discount = 0;
+    let discount: number = 0;
+    let priceAll: number = 0;
     let tmpBills = [];
+    let tmpRunNumberBills = [];
     this.billsPrice = 0;
+    this.billsRunNumberPrice = 0;
     for (let i = 0; i < this.formLotteryArray.value.lotteryArray.length - 1; i++) {
-      tmpBills.push({
-        number: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].number),
-        upper: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].upper),
-        lower: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].lower),
-        todd: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd)
-      });
-
-      console.log("billsPrice: ", this.billsPrice);
-      this.billsPrice = this.billsPrice + parseInt(this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].upper)) + parseInt(this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].lower)) + parseInt(this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd));
-      console.log("billsPrice: ", this.billsPrice);
-
-      console.log("tmpBills: ", tmpBills);
+      if(this.formLotteryArray.value.lotteryArray[i].number.length == 1) {
+        tmpRunNumberBills.push({
+          number: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].number),
+          upper: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].upper),
+          lower: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].lower),
+          todd: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd)
+        })
+      }else {
+        tmpBills.push({
+          number: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].number),
+          upper: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].upper),
+          lower: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].lower),
+          todd: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd)
+        });
+      }
     }
 
-    console.log("[onSumPriceBills] discount", this.formLotteryArray.controls['discount'].value);
+    for (let r = 0; r < tmpRunNumberBills.length; r++) {
+      this.billsRunNumberPrice = this.billsRunNumberPrice +  parseInt(this.undefinedToNumber(tmpRunNumberBills[r]?.upper)) +  parseInt(this.undefinedToNumber(tmpRunNumberBills[r]?.lower));
+    }
 
-    discount = (this.billsPrice * this.formLotteryArray.controls['discount'].value) / 100;
-    this.formLotteryArray.controls['price'].setValue(this.billsPrice)
-    this.formLotteryArray.controls['total_price'].setValue(this.billsPrice - discount)
+    for (let n = 0; n < tmpBills.length; n++) {
+      this.billsPrice = this.billsPrice + parseInt(this.undefinedToNumber(tmpBills[n]?.upper)) + parseInt(this.undefinedToNumber(tmpBills[n]?.lower)) + parseInt(this.undefinedToNumber(tmpBills[n]?.todd));
+
+    }
+
+    console.log("tmpBills: ", tmpBills);
+    console.log("tmpRunNumberBills: ", tmpRunNumberBills);
+
+    console.log("billsPrice: ", this.billsPrice);
+    console.log("billsRunNumberPrice: ", this.billsRunNumberPrice);
+
+    console.log("[onSumPriceBills] discountForCustomer", this.discountForCustomer);
+
+    priceAll = this.billsPrice + this.billsRunNumberPrice;
+    console.log("[onSumPriceBills] priceAll", priceAll);
+
+    discount = (this.billsPrice * this.discountForCustomer) / 100;
+    console.log("[onSumPriceBills] discount", discount);
+
+
+    this.formLotteryArray.controls['price'].setValue(priceAll);
+    this.formLotteryArray.controls['discount'].setValue(discount);
+    this.formLotteryArray.controls['total_price'].setValue(priceAll - discount);
+    this.discountHtml = "ส่วนลด "+ this.discountForCustomer +"\n" + "test";
   }
 
   onNavigateToContect() {
@@ -644,136 +815,49 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   }
 
   // Modal Installment
-  onSubmitModalInstallment() {
-    console.log("onSubmitModalInstallment formModalInstallment", this.formModalInstallment.value);
-    const uuid = md5(this.formModalInstallment.value.installment_date);
-    set(ref(this.db, 'installment/' + uuid), {
-      id: uuid,
-      installment_date: this.formModalInstallment.value.installment_date,
-      create_at: Date.now()
-    }).then(() => {
-      // Data saved successfully!
-      console.log('Data saved successfully!',);
-      this.fetchInstallmentList();
-    }).catch((error) => {
-      // The write failed...
-      console.log('error', error);
+  onAddInstallment() {
+    console.log("[onAddInstallment]");
+    const modalRef = this.modalService.open(AddInstallmentComponent, { centered: true });
+
+    modalRef.result.then((result) => {
+      console.log("result: ", result);
+      if(result == "success"){
+        this.fetchInstallmentList();
+      }
     });
   }
 
+  onRemoveInstallment() {
+    console.log("[onRemoveInstallment]");
+    console.log(this.installmentList[this.installmentSelectIndex].id);
+    remove(ref(this.db, 'installment/'+this.installmentList[this.installmentSelectIndex].id))
+    // const mostViewedPosts = query(ref(this.db, 'installment'), orderByChild("customer_name"), equalTo(this.customerList[this.customerSelectIndex].name));
+    // onValue(mostViewedPosts, async (res) => {
+    //   console.log("mostViewedPosts", res.val());
+    //   let tmpBillsByName: any;
+    //   if (res.val() != null) {
+    //     tmpBillsByName = Object.values(res?.val());
+    //   }
 
+    //   console.log("data", tmpBillsByName);
+
+    //   this.billsByNameList = tmpBillsByName;
+    //   console.log("billsByNameList: ", this.billsByNameList);
+
+    // });
+    
+
+  }
 
 
   // Modal onUnlimited
-  openModalUnlimitedNumber() {
+  openModallimitedNumber() {
     console.log("[onUnlimitedPayHalf]", this.installmentList[this.installmentSelectIndex]);
-    this.installmentSelect = this.installmentList[this.installmentSelectIndex].unlimited_pay_half;
-    // console.log("[onUnlimitedPayHalf] installmentSelect", this.installmentSelect);
-  }
+    this.installmentSelect = this.installmentList[this.installmentSelectIndex].limited_pay_half;
 
-  onSaveUnlimitedPayHalf() {
-    console.log("[onUnlimitedPayHalf]", this.formUnlimitedPayHalf.controls['number_pay_half'].value);
-    console.log("[onSubmit] ", "installment_date => " + this.installmentList[this.installmentSelectIndex].installment_date);
-    console.log("[onSubmit] ", "date => " + this.installmentList[this.installmentSelectIndex].id);
-
-    let numberUnlimitedPayHalf: any[] = this.installmentList[this.installmentSelectIndex]?.unlimited_pay_half == undefined ? [] : this.installmentList[this.installmentSelectIndex]?.unlimited_pay_half;
-    numberUnlimitedPayHalf.push({
-      create_at: Date.now(),
-      number: this.formUnlimitedPayHalf.controls['number_pay_half'].value,
-      type: "จ่ายครึ่ง",
-    });
-    console.log("[onSaveUnlimitedPayHalf] number_pay_half", this.formUnlimitedPayHalf.value.number_pay_half);
-    if(this.formUnlimitedPayHalf.value.number_pay_half.length == 3 && this.formUnlimitedPayHalf.value.check_pay_half_reverse_all){
-      let numLength1 = this.formUnlimitedPayHalf.value.number_pay_half[0];
-      let numLength2 = this.formUnlimitedPayHalf.value.number_pay_half[1];
-      let numLength3 = this.formUnlimitedPayHalf.value.number_pay_half[2];
-      let sixSwap: any = [];
-      let threeSwapNumber1 = numLength1.concat(numLength2).concat(numLength3);
-      let threeSwapNumber2 = numLength2.concat(numLength1).concat(numLength3);
-      let threeSwapNumber3 = numLength3.concat(numLength2).concat(numLength1);
-      let threeSwapNumber4 = numLength1.concat(numLength3).concat(numLength2);
-      let threeSwapNumber5 = numLength2.concat(numLength3).concat(numLength1);
-      let threeSwapNumber6 = numLength3.concat(numLength1).concat(numLength2);
-
-      sixSwap.push(
-        threeSwapNumber1, threeSwapNumber2, threeSwapNumber3, threeSwapNumber4, threeSwapNumber5, threeSwapNumber6
-      )
-
-      console.log("[onSaveUnlimitedPayHalf] sixSwap => ", sixSwap);
-      for(let i = 0; i < sixSwap.length; i++){
-        numberUnlimitedPayHalf.push({
-          create_at: Date.now(),
-          number: sixSwap[i],
-          type: "จ่ายครึ่ง",
-        });
-      }
-      
-
-    }else if(this.formUnlimitedPayHalf.value.number_pay_half.length == 2 && this.formUnlimitedPayHalf.value.check_pay_half_reverse_all){
-      let numLength1 = this.formUnlimitedPayHalf.value.number_pay_half[0];
-      let numLength2 = this.formUnlimitedPayHalf.value.number_pay_half[1];
-      let twoSwap: any = [];
-      let twoSwapNumber1 = numLength1.concat(numLength2);
-      let twoSwapNumber2 = numLength2.concat(numLength1);
-      twoSwap.push(twoSwapNumber1, twoSwapNumber2)
-
-      console.log("[onSaveUnlimitedPayHalf] twoSwap => ", twoSwap);
-      for(let i = 0; i < twoSwap.length; i++){
-        numberUnlimitedPayHalf.push({
-          create_at: Date.now(),
-          number: twoSwap[i],
-          type: "จ่ายครึ่ง",
-        });
-      }
-    }
-
-    const set = new Set();
-    let uniqueNumber = numberUnlimitedPayHalf.filter((item: any, index: any) => {
-      console.log("[onSaveUnlimitedPayHalf] uniqueNumber c=> ", item.number + "index=> " + index);
-      const alreadyHas = set.has(item.number)
-      set.add(item.number)
-
-      return !alreadyHas
-    });
-    console.log("[onSaveUnlimitedPayHalf] uniqueNumber", uniqueNumber);
-
-    this.updateUnlimitedPayHalf(uniqueNumber);
+    const modalRef = this.modalService.open(LimitedNumberComponent, { fullscreen: true });
+    modalRef.componentInstance.installmentList = this.installmentList[this.installmentSelectIndex];
 
   }
-
-  onRemoveUnlimitedPayHalf(index: number) {
-    console.log("[onRemoveUnlimitedPayHalf] index => ", index);
-
-    const installmentAll = this.installmentList[this.installmentSelectIndex].unlimited_pay_half;
-    const indexOfObject = installmentAll.findIndex((object: any) => {
-      return object.id === index;
-    });
-
-    installmentAll.splice(indexOfObject, 1);
-
-    console.log("[onRemoveUnlimitedPayHalf] installmentSelect => ", installmentAll);
-
-    this.updateUnlimitedPayHalf(installmentAll);
-  }
-
-  updateUnlimitedPayHalf(numberUnlimitedPayHalfList: any[]) {
-    update(ref(this.db, 'installment/' + this.installmentList[this.installmentSelectIndex].id), {
-      unlimited_pay_half: numberUnlimitedPayHalfList,
-      edit_at: Date.now()
-    }).then(() => {
-      // Data saved successfully!
-      console.log('Data saved successfully!');
-      // this.createContectModalClose?.nativeElement?.click();
-      this.fetchInstallmentList();
-      this.installmentSelect = this.installmentList[this.installmentSelectIndex].unlimited_pay_half;
-      this.formUnlimitedPayHalf.reset();
-
-    }).catch((error) => {
-      // The write failed...
-      console.log('error', error);
-    });
-  }
-
-
 
 }
