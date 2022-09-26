@@ -182,6 +182,10 @@
                     <ng-template ngx-datatable-header-template>
                         <span>วันที่สร้าง</span>
                     </ng-template>
+                    <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
+                        <p>{{ row.create_at | dateFormat: 'DD/MM/YYYY' }}</p>
+                        <!-- <p>{{ row.create_at | dateFormat: 'h:mm a' }}</p> -->
+                    </ng-template>
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="similarity" [sortable]="false">

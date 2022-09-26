@@ -25,6 +25,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { AddLineTokenComponent } from './modals/add-line-token/add-line-token.component';
 import { AddRewardLotteryComponent } from './modals/add-reward-lottery/add-reward-lottery.component';
 import { NegativNumberPipe } from './pipes/negativ-number.pipe';
+import { DateFormatPipe } from './pipes/date-format.pipe';
 
 const app = initializeApp(environment.firebaseConfig);
 // const app = initializeApp({
@@ -55,6 +56,7 @@ const analytics = getAnalytics(app);
     AddLineTokenComponent,
     AddRewardLotteryComponent,
     NegativNumberPipe,
+    DateFormatPipe,
   ],
   imports: [
     BrowserModule,
