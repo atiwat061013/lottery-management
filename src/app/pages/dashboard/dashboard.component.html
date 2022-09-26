@@ -2,10 +2,9 @@
   <div class="row">
       <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;" class="col-12">
           <div class="col-4">
-              <!-- <input type="date" class="form-control clsDatePicker" value="2022-08-01" id="txtchangelot"> -->
-              <!-- <label class="form-label">งวดที่</label>
+              <label class="form-label">งวดที่</label>
               <div>
-                  <form [formGroup]="formBills">
+                  <form [formGroup]="formInstallment">
                       <select formControlName="installment" class="form-select form-select-sm"
                           aria-label=".form-select-sm example" (change)="onInstallmentChange($event)">
                           <option *ngFor="let installment of installmentList; let x = index"
@@ -14,7 +13,7 @@
                           </option>
                       </select>
                   </form>
-              </div> -->
+              </div>
           </div>
 
           <div>

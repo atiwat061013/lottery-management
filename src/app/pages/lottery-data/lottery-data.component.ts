@@ -790,9 +790,24 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   }
 
   onRemoveInstallment() {
-    console.log("[onRemoveInstallment]");
-    console.log(this.installmentList[this.installmentSelectIndex].id);
-    remove(ref(this.db, 'installment/' + this.installmentList[this.installmentSelectIndex].id))
+    console.log("[onDelete]");
+    const modalConfirmRef = this.modalService.open(ConfirmDialogComponent, { centered: true });
+    modalConfirmRef.componentInstance.text = {
+      header: "ต้องการลบข้อมูล",
+      message: "ต้องการลบงวดใช่หรือไม่ บิลทั้งหมดจะไม่มีงวด อาจเกิดปัญหาได้"
+    }
+    modalConfirmRef.result.then((result) => {
+      console.log("result: ", result);
+      if (result == "confirm") {
+        console.log("[onRemoveInstallment]");
+        console.log(this.installmentList[this.installmentSelectIndex].id);
+        remove(ref(this.db, 'installment/' + this.installmentList[this.installmentSelectIndex].id)).then(() => {
+          console.log('[onRemoveInstallment] Data remove successfully!');
+        }).catch((err: any) => {
+          console.log('[onRemoveInstallment] err --> ', err);
+        })
+      }
+    });
   }
 
 

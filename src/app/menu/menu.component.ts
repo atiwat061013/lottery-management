@@ -36,12 +36,12 @@ export class MenuComponent implements OnInit {
       icon: 'swap',
       child: [],
     },
-    {
-      title: 'สุ่มเลข',
-      url: 'reandomNumber',
-      icon: 'swap',
-      child: [],
-    },
+    // {
+    //   title: 'สุ่มเลข',
+    //   url: 'reandomNumber',
+    //   icon: 'swap',
+    //   child: [],
+    // },
   ];
 
   constructor(

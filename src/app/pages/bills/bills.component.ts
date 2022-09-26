@@ -46,7 +46,7 @@ export class BillsComponent implements OnInit {
   }
 
   ngAfterViewChecked() {
-    setTimeout(() => { window.dispatchEvent(new Event('resize'));}, 250)
+    setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 250)
   }
 
   async ngOnInit(): Promise<void> {
@@ -55,7 +55,7 @@ export class BillsComponent implements OnInit {
     this.formBills = this.formBuilder.group({
       installment: new FormControl('', [Validators.required]),
     });
-    
+
   }
 
   notifyToLine() {
@@ -259,86 +259,133 @@ export class BillsComponent implements OnInit {
       let bill_win = [];
       let reward: number = 0;
       for (let i = 0; i < this.billsList[b].item_buy.length; i++) {
-        // console.log("[onCheckReward] item -->"+ i, this.billsList[b].item_buy[i]);
-        if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last2) {
-          let won: number = this.billsList[b].item_buy[i].lower * customer.pay_rate_two_number;
-          bill_win.push({
-            number: this.billsList[b].item_buy[i].number,
-            price: this.billsList[b].item_buy[i].lower,
-            type: "เลขท้าย2ตัว",
-            reward: won
-          });
-          reward += won;
         
-       }else if(this.billsList[b].item_buy[i].number == this.installmentNow?.award?.first.substr(3, 6)) {
-        let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_three_straight;
-        bill_win.push({
-          number: this.billsList[b].item_buy[i].number,
-          price: this.billsList[b].item_buy[i].upper,
-          type: "3ตัวตรง",
-          reward: won
-        });
-        reward += won;
-       }else if(this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3f1 ||
-        this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3f2 ||
-        this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3b1 ||
-        this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3b2) {
-        if(this.billsList[b].item_buy[i].upper != 0){
-          let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_three_lower;
-          bill_win.push({
-            number: this.billsList[b].item_buy[i].number,
-            price: this.billsList[b].item_buy[i].upper,
-            type: "3ตัวล่าง",
-            reward: won
-          });
-          reward += won;
-        }
-       }else {
-        let numLength1 = this.installmentNow?.award?.first.substr(3, 6)[0];
-        let numLength2 = this.installmentNow?.award?.first.substr(3, 6)[1];
-        let numLength3 = this.installmentNow?.award?.first.substr(3, 6)[2];
+        if(this.billsList[b].item_buy[i].number.length == 1){
+          //run number
+          if (
+            this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last2[0] && this.billsList[b].item_buy[i].lower != 0 ||
+            this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last2[1] && this.billsList[b].item_buy[i].lower != 0
+          ) {
+            let won: number = this.billsList[b].item_buy[i].lower * customer.pay_rate_run_lower;
+            bill_win.push({
+              number: this.billsList[b].item_buy[i].number,
+              price: this.billsList[b].item_buy[i].lower,
+              type: "เลขวิ่งล่าง",
+              reward: won
+            });
+            reward += won;
+          }
 
-        let threeSwapNumber1 = numLength1.concat(numLength2).concat(numLength3);
-        let threeSwapNumber2 = numLength2.concat(numLength1).concat(numLength3);
-        let threeSwapNumber3 = numLength3.concat(numLength2).concat(numLength1);
-        let threeSwapNumber4 = numLength1.concat(numLength3).concat(numLength2);
-        let threeSwapNumber5 = numLength2.concat(numLength3).concat(numLength1);
-        let threeSwapNumber6 = numLength3.concat(numLength1).concat(numLength2);
-        if(this.billsList[b].item_buy[i].number == threeSwapNumber1 ||
-          this.billsList[b].item_buy[i].number == threeSwapNumber2 ||
-          this.billsList[b].item_buy[i].number == threeSwapNumber3 ||
-          this.billsList[b].item_buy[i].number == threeSwapNumber4 ||
-          this.billsList[b].item_buy[i].number == threeSwapNumber5 ||
-          this.billsList[b].item_buy[i].number == threeSwapNumber6 
-          ){
-            if(this.billsList[b].item_buy[i].todd != 0){
-              let won: number = this.billsList[b].item_buy[i].todd * customer.pay_rate_three_todd;
+          if (
+            this.billsList[b].item_buy[i].number == this.installmentNow?.award?.first.substr(3, 6)[0] && this.billsList[b].item_buy[i].upper != 0 ||
+            this.billsList[b].item_buy[i].number == this.installmentNow?.award?.first.substr(3, 6)[1] && this.billsList[b].item_buy[i].upper != 0 ||
+            this.billsList[b].item_buy[i].number == this.installmentNow?.award?.first.substr(3, 6)[2] && this.billsList[b].item_buy[i].upper != 0
+          ) {
+            let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_run_upper;
+            bill_win.push({
+              number: this.billsList[b].item_buy[i].number,
+              price: this.billsList[b].item_buy[i].upper,
+              type: "เลขวิ่งบน",
+              reward: won
+            });
+            reward += won;
+          }
+        }else if(this.billsList[b].item_buy[i].number.length == 2){
+          //two number lower
+          if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last2) {
+            let won: number = this.billsList[b].item_buy[i].lower * customer.pay_rate_two_number;
+            bill_win.push({
+              number: this.billsList[b].item_buy[i].number,
+              price: this.billsList[b].item_buy[i].lower,
+              type: "เลข2ตัวล่าง",
+              reward: won
+            });
+            reward += won;
+          }
+          //two number upper
+          if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.first.substr(4, 6)) {
+            let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_two_number;
+            bill_win.push({
+              number: this.billsList[b].item_buy[i].number,
+              price: this.billsList[b].item_buy[i].upper,
+              type: "เลข2ตัวบน",
+              reward: won
+            });
+            reward += won;
+          }
+        }else if(this.billsList[b].item_buy[i].number.length == 3){
+          //three number
+          if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.first.substr(3, 6)) {
+            let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_three_straight;
+            bill_win.push({
+              number: this.billsList[b].item_buy[i].number,
+              price: this.billsList[b].item_buy[i].upper,
+              type: "3ตัวตรง",
+              reward: won
+            });
+            reward += won;
+          } else if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3f1 ||
+            this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3f2 ||
+            this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3b1 ||
+            this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3b2) {
+            if (this.billsList[b].item_buy[i].upper != 0) {
+              let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_three_lower;
               bill_win.push({
                 number: this.billsList[b].item_buy[i].number,
-                price: this.billsList[b].item_buy[i].todd,
-                type: "3ตัวโต๊ส",
+                price: this.billsList[b].item_buy[i].upper,
+                type: "3ตัวล่าง",
                 reward: won
               });
               reward += won;
             }
+          } else {
+            let numLength1 = this.installmentNow?.award?.first.substr(3, 6)[0];
+            let numLength2 = this.installmentNow?.award?.first.substr(3, 6)[1];
+            let numLength3 = this.installmentNow?.award?.first.substr(3, 6)[2];
+
+            let threeSwapNumber1 = numLength1.concat(numLength2).concat(numLength3);
+            let threeSwapNumber2 = numLength2.concat(numLength1).concat(numLength3);
+            let threeSwapNumber3 = numLength3.concat(numLength2).concat(numLength1);
+            let threeSwapNumber4 = numLength1.concat(numLength3).concat(numLength2);
+            let threeSwapNumber5 = numLength2.concat(numLength3).concat(numLength1);
+            let threeSwapNumber6 = numLength3.concat(numLength1).concat(numLength2);
+            if (this.billsList[b].item_buy[i].number == threeSwapNumber1 ||
+              this.billsList[b].item_buy[i].number == threeSwapNumber2 ||
+              this.billsList[b].item_buy[i].number == threeSwapNumber3 ||
+              this.billsList[b].item_buy[i].number == threeSwapNumber4 ||
+              this.billsList[b].item_buy[i].number == threeSwapNumber5 ||
+              this.billsList[b].item_buy[i].number == threeSwapNumber6
+            ) {
+              if (this.billsList[b].item_buy[i].todd != 0) {
+                let won: number = this.billsList[b].item_buy[i].todd * customer.pay_rate_three_todd;
+                bill_win.push({
+                  number: this.billsList[b].item_buy[i].number,
+                  price: this.billsList[b].item_buy[i].todd,
+                  type: "3ตัวโต๊ส",
+                  reward: won
+                });
+                reward += won;
+              }
+            }
           }
-       }
-
-       if(i == this.billsList[b].item_buy.length-1){
-        console.log("last");
-
-        sum_bill = {
-          bill_win,
-          reward: reward
         }
 
-       }
+
+        if (i == this.billsList[b].item_buy.length - 1) {
+          console.log("last");
+
+          sum_bill = {
+            bill_win,
+            reward: reward
+          }
+
+        }
 
       }
       console.log("[billsList]", this.billsList[b])
       console.log("[bill_win]", bill_win.length)
 
-      if(bill_win.length == 0){
+      if (bill_win.length == 0) {
         update(ref(this.db, 'bills/' + this.billsList[b].id), {
           edit_at: Date.now(),
           status: "ไม่ถูกรางวัล"
@@ -349,7 +396,7 @@ export class BillsComponent implements OnInit {
           // The write failed...
           console.log('error', error);
         });
-      }else {
+      } else {
         console.log("[update] result --> ", sum_bill);
         console.log("[update] bill_win --> ", bill_win);
         update(ref(this.db, 'bills/' + this.billsList[b].id), {
