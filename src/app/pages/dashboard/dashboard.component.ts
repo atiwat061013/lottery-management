@@ -46,12 +46,14 @@ export class DashboardComponent implements OnInit {
             bank_account_name: data[key].bank_account_name,
             bank_account: data[key].bank_account
           });
-          this.total_price += data[key].total_price
-          this.reward =+ data[key].sum_bill?.reward
+          this.total_price += data[key]?.total_price
+          this.reward += data[key].sum_bill?.reward == undefined ? 0 : data[key].sum_bill?.reward
         });
       }
 
       this.billsList = tmpName;
+      console.log("[fetchBillsList] total_price => ", this.total_price);
+      console.log("[fetchBillsList] reward => ", this.reward);
       console.log("[fetchBillsList] billsList => ", this.billsList);
     });
   }

@@ -110,23 +110,9 @@
                                 <strong>รวมทั้งหมด {{ rowCount | number }} คน</strong>
                             </div>
                         </div>
-
-                        <!-- <div class="dropdown">
-                            <button style="z-index: 100" class="btn btn-outline-secondary dropdown-toggle" type="button"
-                                data-bs-toggle="dropdown">
-                                Show: {{ rowLimit }} items
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <button class="dropdown-item" type="button" *ngFor="let limit of LIMITS"
-                                        (click)="limitEmp(limit.value)">
-                                        แสดง {{ limit.value }} รายการ
-                                    </button>
-                                </li>
-                            </ul>
-                        </div> -->
                         <div ngbDropdown container="body">
-                            <button type="button" class="btn btn-outline-primary btn-sm" ngbDropdownToggle>Actions</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" ngbDropdownToggle>แสดง {{
+                                rowLimit }} รายการ</button>
                             <ul ngbDropdownMenu>
                                 <li>
                                     <button class="dropdown-item" type="button" *ngFor="let limit of LIMITS"
@@ -135,8 +121,8 @@
                                     </button>
                                 </li>
                             </ul>
-                          </div>
-                          
+                        </div>
+
                         <datatable-pager [pagerLeftArrowIcon]="'datatable-icon-left'"
                             [pagerRightArrowIcon]="'datatable-icon-right'" [pagerPreviousIcon]="'datatable-icon-prev'"
                             [pagerNextIcon]="'datatable-icon-skip'" [page]="curPage" [size]="pageSize"
@@ -168,6 +154,11 @@
                     <ng-template ngx-datatable-header-template>
                         <span>สถานะบิล</span>
                     </ng-template>
+                    <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
+                        <span class="badge tag-box"
+                            [ngClass]="row.status == 'ไม่ถูกรางวัล' ? 'lose' : row.status == 'ถูกรางวัล' ? 'win' : row.status == 'รอผล' ? 'wait' : '' ">
+                            {{ row.status | titlecase }}</span>
+                    </ng-template>
                 </ngx-datatable-column>
 
                 <ngx-datatable-column prop="sum_bill" [sortable]="true">
@@ -176,8 +167,14 @@
                     </ng-template>
                     <ng-template class="text-center" ngx-datatable-cell-template let-row="row" let-value="value"
                         let-rowIndex="rowIndex">
-                        <!-- {{ row?.sum_bill?.reward == undefined ? "-"+row?.total_price : row?.sum_bill?.reward }} -->
-                        {{ row?.sum_bill?.reward == undefined ? 0 - row?.total_price : row?.sum_bill?.reward - row?.total_price  }}
+                        <span style="color: green;"
+                            *ngIf="!((row?.sum_bill?.reward == undefined ? 0 - row?.total_price : row?.sum_bill?.reward - row?.total_price) | negativNumber)">{{
+                            row?.sum_bill?.reward == undefined ? 0 - row?.total_price : row?.sum_bill?.reward -
+                            row?.total_price }}</span>
+                        <span style="color: red;"
+                            *ngIf="((row?.sum_bill?.reward == undefined ? 0 - row?.total_price : row?.sum_bill?.reward - row?.total_price) | negativNumber)">{{
+                            row?.sum_bill?.reward == undefined ? 0 - row?.total_price : row?.sum_bill?.reward -
+                            row?.total_price }}</span>
                     </ng-template>
                 </ngx-datatable-column>
 

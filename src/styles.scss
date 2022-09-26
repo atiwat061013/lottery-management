@@ -163,5 +163,11 @@ html,body {
   display: inline-block;
   width: 100% !important;
 }
+
+.validation-errors {
+  color: red;
+  font-size: 14px;
+}
+
 /* Importing Bootstrap SCSS file. */
 @import '~bootstrap/scss/bootstrap';

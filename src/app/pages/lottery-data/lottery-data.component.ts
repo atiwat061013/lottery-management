@@ -32,9 +32,8 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
 
   validation_messages = {
-    installment_date: [{ type: 'required', message: 'Name is required.' }],
-    customer: [{ type: 'required', message: 'Name is required.' }],
-    installment: [{ type: 'required', message: 'Name is required.' }],
+    customer: [{ type: 'required', message: 'กรุณาเลือกลูกค้า' }],
+    installment: [{ type: 'required', message: 'กรุณาเลือกงวด' }],
   };
 
   formLotteryArray: FormGroup | any;
@@ -59,10 +58,10 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
   showViewbills: boolean = false;
   billsByNameInView: any = [];
-  
+
 
   constructor(
-    private formBuilder: FormBuilder, 
+    private formBuilder: FormBuilder,
     private router: Router,
     public modalService: NgbModal) { }
 
@@ -80,15 +79,13 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     });
 
     this.fetchCustomerList();
-    console.log("[ngOnInit]", this.customerList);
-
     this.fetchInstallmentList();
 
 
   }
 
   ngAfterViewChecked() {
-    setTimeout(() => { window.dispatchEvent(new Event('resize'));}, 250)
+    setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 250)
   }
 
   ngAfterViewInit() {
@@ -101,10 +98,6 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
   ngOnDestroy() {
     this.sub1.unsubscribe();
-  }
-
-  get f() {
-    return this.formLotteryArray.controls;
   }
 
 
@@ -184,11 +177,11 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       this.installmentList = tmpInstallment;
 
       console.log("[fetchInstallmentList]", this.installmentList);
-      if(localStorage.getItem("checkInstallment") == ""){
+      if (localStorage.getItem("checkInstallment") == "") {
         //set last installment
         this.formLotteryArray.controls['installment'].setValue(this.installmentList[this.installmentList.length - 1].value)
         this.installmentSelectIndex = this.installmentList.length - 1
-      }else {
+      } else {
         let checkInstallmentIndex = await this.installmentList.findIndex((ele: any) => ele.value == localStorage.getItem("checkInstallment"));
         console.log("[fetchInstallmentList]", "checkInstallment => " + checkInstallmentIndex);
         console.log("[fetchInstallmentList] vvvvvvvv", this.installmentList[checkInstallmentIndex]?.value);
@@ -208,17 +201,19 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     });
   }
 
-  async addItem() {
-    this.lotteryArray = this.f['lotteryArray'] as FormArray;
-    // await this.lotteryArray.push(this.createItem());
-    this.lotteryArray.push(this.createItem());
-    // this.inputs.toArray()[this.inputs.toArray().length -1].nativeElement.focus();
+  removeItem(idx: number): void {
+    console.log("[removeItem] lotteryArray.length", this.formLotteryArray.value.lotteryArray.length);
+    if (this.formLotteryArray.value.lotteryArray.length > 1) {
+      (this.formLotteryArray.controls['lotteryArray'] as FormArray).removeAt(idx);
+    }
+    this.onSumPriceBills();
+  }
 
-    // // working
-    // this.emailInputElement.nativeElement.focus();
+  async addItem() {
+    this.lotteryArray = this.formLotteryArray.controls['lotteryArray'] as FormArray;
+    this.lotteryArray.push(this.createItem());
     this.rows.last.nativeElement.focus();
     this.onSumPriceBills();
-
   }
 
   onKeyupNumberEnter() {
@@ -230,9 +225,6 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   }
 
   onKeyupLowerEnter(index: number) {
-    console.log("[onKeyupLowerEnter] index", index);
-
-
     console.log("[onKeyupLowerEnter] formLotteryArray", this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length);
     if (this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length == 3) {
       this.toddField.last.nativeElement.focus();
@@ -243,13 +235,12 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
   onChangeNumber(event: any, index: number) {
     console.log('[onChangeNumber] event: ', event.target.value);
-
     if (event.target.value.length == 1 || event.target.value.length == 2 || event.target.value.length == 0) {
       this.formLotteryArray.get("lotteryArray").at(index).get("todd").disable();
     } else {
       this.formLotteryArray.get("lotteryArray").at(index).get("todd").enable();
     }
-
+    this.onSumPriceBills();
   }
 
   onChangeUpper(event: any, index: number) {
@@ -286,7 +277,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
             console.log('[onChangeUpper] lotteryArray: not same uniqueChars ->', uniqueChars);
 
-            this.lotteryArray = this.f['lotteryArray'] as FormArray;
+            this.lotteryArray = this.formLotteryArray.controls['lotteryArray'] as FormArray;
             let upperPrice = this.formLotteryArray.get("lotteryArray").at(index).get("upper").value;
             for (let i = 0; i < uniqueChars.length; i++) {
               if (this.formLotteryArray.get("lotteryArray").at(index).get("number").value != uniqueChars[i]) {
@@ -320,7 +311,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
             console.log('[onChangeUpper] lotteryArray: not same sixSwap ->', sixSwap);
 
 
-            this.lotteryArray = this.f['lotteryArray'] as FormArray;
+            this.lotteryArray = this.formLotteryArray.controls['lotteryArray'] as FormArray;
             let upperPrice = this.formLotteryArray.get("lotteryArray").at(index).get("upper").value;
             for (let i = 0; i < sixSwap.length; i++) {
               this.lotteryArray.push(this.formBuilder.group({
@@ -337,7 +328,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
         }
 
       }
-    } else if(this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length == 2) {
+    } else if (this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length == 2) {
       if (event.key == "+") {
         let numLength1 = this.formLotteryArray.get("lotteryArray").at(index).get("number").value[0];
         let numLength2 = this.formLotteryArray.get("lotteryArray").at(index).get("number").value[1];
@@ -359,7 +350,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
           let upperPrice = this.formLotteryArray.get("lotteryArray").at(index).get("upper").value;
 
-          this.lotteryArray = this.f['lotteryArray'] as FormArray;
+          this.lotteryArray = this.formLotteryArray.controls['lotteryArray'] as FormArray;
           this.lotteryArray.push(this.formBuilder.group({
             number: new FormControl({ value: swapNumber, disabled: false }),
             upper: new FormControl(upperPrice),
@@ -371,12 +362,12 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
         }
 
       }
-    } else if(this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length == 1) {
+    } else if (this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length == 1) {
       if (event.key == "+") {
         this.formLotteryArray.get("lotteryArray").at(index).get("upper").setValue(numberUpper.substring(0, numberUpper.length - 1));
       }
     }
-
+    this.onSumPriceBills();
   }
 
   onChangeLower(event: any, index: number) {
@@ -413,7 +404,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
             console.log('[onChangeUpper] lotteryArray: not same uniqueChars ->', uniqueChars);
 
-            this.lotteryArray = this.f['lotteryArray'] as FormArray;
+            this.lotteryArray = this.formLotteryArray.controls['lotteryArray'] as FormArray;
             let lowerPrice = this.formLotteryArray.get("lotteryArray").at(index).get("lower").value;
             let upperPrice = this.formLotteryArray.get("lotteryArray").at(index).get("upper").value;
             for (let i = 0; i < uniqueChars.length; i++) {
@@ -448,7 +439,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
             let lowerPrice = this.formLotteryArray.get("lotteryArray").at(index).get("lower").value;
             let upperPrice = this.formLotteryArray.get("lotteryArray").at(index).get("upper").value;
-            this.lotteryArray = this.f['lotteryArray'] as FormArray;
+            this.lotteryArray = this.formLotteryArray.controls['lotteryArray'] as FormArray;
             for (let i = 0; i < sixSwap.length; i++) {
               this.lotteryArray.push(this.formBuilder.group({
                 number: new FormControl({ value: sixSwap[i], disabled: false }),
@@ -462,7 +453,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
         }
       }
-    } else if(this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length == 2) {
+    } else if (this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length == 2) {
       if (event.key == "+") {
         let numLength1 = this.formLotteryArray.get("lotteryArray").at(index).get("number").value[0];
         let numLength2 = this.formLotteryArray.get("lotteryArray").at(index).get("number").value[1];
@@ -485,7 +476,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
           let lowerPrice = this.formLotteryArray.get("lotteryArray").at(index).get("lower").value;
           let upperPrice = this.formLotteryArray.get("lotteryArray").at(index).get("upper").value;
 
-          this.lotteryArray = this.f['lotteryArray'] as FormArray;
+          this.lotteryArray = this.formLotteryArray.controls['lotteryArray'] as FormArray;
           this.lotteryArray.push(this.formBuilder.group({
             number: new FormControl({ value: swapNumber, disabled: false }),
             upper: new FormControl(upperPrice),
@@ -496,72 +487,68 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
           this.addItem();
         }
       }
-    } else if(this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length == 1){
+    } else if (this.formLotteryArray.get("lotteryArray").at(index).get("number").value.length == 1) {
       if (event.key == "+") {
         this.formLotteryArray.get("lotteryArray").at(index).get("lower").setValue(numberLower.substring(0, numberLower.length - 1));
       }
     }
-
-  }
-
-  removeItem(idx: number): void {
-    console.log("[removeItem] lotteryArray.length", this.formLotteryArray.value.lotteryArray.length);
-    if(this.formLotteryArray.value.lotteryArray.length > 1){
-      (this.f['lotteryArray'] as FormArray).removeAt(idx);
-    }
     this.onSumPriceBills();
+
   }
 
   onSubmit() {
     this.formLotteryArray.markAllAsTouched();
+    console.log("[onSubmit] length => ", this.formLotteryArray.value.lotteryArray.length);
     console.log("[onSubmit] price => ", this.formLotteryArray.value);
-    let tmpBills = [];
-    for (let i = 0; i < this.formLotteryArray.value.lotteryArray.length - 1; i++) {
-      tmpBills.push({
-        number: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].number),
-        upper: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].upper),
-        lower: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].lower),
-        todd: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd)
+    if (this.formLotteryArray.value.lotteryArray.length > 1) {
+      let tmpBills = [];
+      for (let i = 0; i < this.formLotteryArray.value.lotteryArray.length - 1; i++) {
+        tmpBills.push({
+          number: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].number),
+          upper: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].upper),
+          lower: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].lower),
+          todd: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd)
+        });
+
+        console.log(this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd));
+      }
+
+      this.billsArray = tmpBills;
+      console.log("[onSubmit] billsArray", this.billsArray);
+
+      console.log("[onSubmit] ", "installment_date => " + this.installmentList[this.installmentSelectIndex].installment_date);
+      console.log("[onSubmit] ", "installmentList => " + this.installmentList);
+      console.log("[onSubmit] ", "installmentSelectIndex => " + this.installmentSelectIndex);
+
+      const newPostKey = push(child(ref(this.db), 'bills')).key;
+      set(ref(this.db, 'bills/' + newPostKey), {
+        id: newPostKey,
+        customer_name: this.customerList[this.customerSelectIndex].name,
+        customer_id: this.customerList[this.customerSelectIndex].id,
+        installment_date: this.installmentList[this.installmentSelectIndex].installment_date,
+        installment_id: this.installmentList[this.installmentSelectIndex].id,
+        price: this.formLotteryArray.value.price,
+        discount: this.formLotteryArray.value.discount,
+        total_price: this.formLotteryArray.value.total_price,
+        create_at: Date.now(),
+        status: "รอผล",
+        item_buy: this.billsArray,
+      }).then((res: any) => {
+        // Data saved successfully!
+        console.log('Data saved successfully! res=> ', res);
+        this.lotteryArray.clear();
+        this.addItem();
+
+      }).catch((error) => {
+        // The write failed...
+        console.log('error', error);
       });
-
-      console.log(this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd));
+    }else {
+      // this.formLotteryArray.invalid
     }
-
-    this.billsArray = tmpBills;
-    console.log("[onSubmit] billsArray", this.billsArray);
-
-    console.log("[onSubmit] ", "installment_date => " + this.installmentList[this.installmentSelectIndex].installment_date);
-    console.log("[onSubmit] ", "installmentList => " + this.installmentList);
-    console.log("[onSubmit] ", "installmentSelectIndex => " + this.installmentSelectIndex);
-
-    const newPostKey = push(child(ref(this.db), 'bills')).key;
-    set(ref(this.db, 'bills/' + newPostKey), {
-      id: newPostKey,
-      customer_name: this.customerList[this.customerSelectIndex].name,
-      customer_id: this.customerList[this.customerSelectIndex].id,
-      installment_date: this.installmentList[this.installmentSelectIndex].installment_date,
-      installment_id: this.installmentList[this.installmentSelectIndex].id,
-      price: this.formLotteryArray.value.price,
-      discount: this.formLotteryArray.value.discount,
-      total_price: this.formLotteryArray.value.total_price,
-      create_at: Date.now(),
-      status: "รอผล",
-      item_buy: this.billsArray,
-    }).then((res: any) => {
-      // Data saved successfully!
-      console.log('Data saved successfully! res=> ', res);
-      this.lotteryArray.clear();
-      this.addItem();
-
-    }).catch((error) => {
-      // The write failed...
-      console.log('error', error);
-    });
-
-
   }
 
-  onEdit(){
+  onEdit() {
     console.log("[onEdit] billsByNameInView=> ", this.billsByNameInView);
     let tmpBills = [];
     for (let i = 0; i < this.formLotteryArray.value.lotteryArray.length - 1; i++) {
@@ -573,7 +560,6 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       });
     }
     this.billsArray = tmpBills;
-
     console.log("[onSubmit] billsArray", this.billsArray);
     update(ref(this.db, 'bills/' + this.billsByNameInView.id), {
       item_buy: this.billsArray,
@@ -592,10 +578,10 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       this.showViewbills = false;
       console.log('error', error);
     });
-    
+
   }
 
-  onDelete(){
+  onDelete() {
     console.log("[onDelete]");
     const modalConfirmRef = this.modalService.open(ConfirmDialogComponent, { centered: true });
     modalConfirmRef.componentInstance.text = {
@@ -604,8 +590,8 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     }
     modalConfirmRef.result.then((result) => {
       console.log("result: ", result);
-      if(result == "confirm"){
-        remove(ref(this.db, 'bills/'+this.billsByNameInView.id)).then(() => {
+      if (result == "confirm") {
+        remove(ref(this.db, 'bills/' + this.billsByNameInView.id)).then(() => {
           console.log('Data remove successfully!');
           this.showViewbills = false;
           this.lotteryArray.clear();
@@ -632,8 +618,6 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   async qurryBills() {
     console.log("[qurryBills] ", this.customerList);
     console.log("[qurryBills] ", this.customerSelectIndex);
-    // console.log("[qurryBills] ", this.customerList[this.customerSelectIndex].value);
-
     const mostViewedPosts = query(ref(this.db, 'bills'), orderByChild("customer_name"), equalTo(this.customerList[this.customerSelectIndex].name));
     onValue(mostViewedPosts, async (res) => {
       console.log("mostViewedPosts", res.val());
@@ -643,30 +627,28 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       }
 
       console.log("data", tmpBillsByName);
-
       this.billsByNameList = tmpBillsByName;
       console.log("billsByNameList: ", this.billsByNameList);
-
     });
   }
 
-  onViewbills(index: any){
+  onViewbills(index: any) {
     console.log("[onViewbills] index => ", index);
     console.log("[onViewbills] billsByNameList => ", this.billsByNameList[index]);
     console.log("[onViewbills] billsByNameList item_buy => ", this.billsByNameList[index].item_buy);
     this.billsByNameInView = this.billsByNameList[index];
     this.showViewbills = true;
 
-    if(this.lotteryArray?.length != undefined){
+    if (this.lotteryArray?.length != undefined) {
       this.lotteryArray.clear();
     }
-    
+
     let itemBuy = this.billsByNameList[index].item_buy;
 
-    this.lotteryArray = this.f['lotteryArray'] as FormArray;
-    (this.f['lotteryArray'] as FormArray).removeAt(0);
+    this.lotteryArray = this.formLotteryArray.controls['lotteryArray'] as FormArray;
+    (this.formLotteryArray.controls['lotteryArray'] as FormArray).removeAt(0);
 
-    for(let i = 0; i < itemBuy.length; i++){
+    for (let i = 0; i < itemBuy.length; i++) {
       console.log("[onViewbills] index => ", itemBuy[i].lower);
       this.lotteryArray.push(this.formBuilder.group({
         number: new FormControl(itemBuy[i].number),
@@ -676,23 +658,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       }));
     }
     this.addItem();
-    // let tmpBills = [];
-    // this.billsPrice = 0;
-    // for (let i = 0; i < this.formLotteryArray.value.lotteryArray.length - 1; i++) {
-    //   tmpBills.push({
-    //     number: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].number),
-    //     upper: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].upper),
-    //     lower: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].lower),
-    //     todd: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd)
-    //   });
 
-    //   console.log("billsPrice: ", this.billsPrice);
-    //   this.billsPrice = this.billsPrice + parseInt(this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].upper)) + parseInt(this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].lower)) + parseInt(this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd));
-    //   console.log("billsPrice: ", this.billsPrice);
-
-    //   console.log("tmpBills: ", tmpBills);
-    // }
-    
   }
 
   onCustomerChange(event: any) {
@@ -701,17 +667,26 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     console.log("customerSelectIndex ", this.customerSelectIndex);
     this.discountForCustomer = parseInt(this.customerList[this.customerSelectIndex].discount);
     this.discountHtml = this.discountForCustomer.toString();
-    // this.formLotteryArray.controls['discount'].setValue(this.customerList[this.customerSelectIndex].discount);
+
+    this.qurryBills()
     this.onSumPriceBills();
     if (this.formLotteryArray.controls['checkCustomer'].value) {
       localStorage.setItem("checkCustomer", this.customerList[this.customerSelectIndex]?.name);
     } else {
       localStorage.setItem("checkCustomer", "")
     }
+  }
 
-
-
-
+  onInstallmentChange(event: any) {
+    console.log('[onInstallmentChange] event: ', event.target.selectedIndex);
+    this.installmentSelectIndex = event.target.selectedIndex;
+    console.log("installmentSelectIndex", this.installmentSelectIndex);
+    this.qurryBills();
+    if (this.formLotteryArray.controls['checkInstallment'].value) {
+      localStorage.setItem("checkInstallment", this.installmentList[this.installmentSelectIndex]?.value);
+    } else {
+      localStorage.setItem("checkInstallment", "")
+    }
   }
 
   onCheckCustomerChange(event: any) {
@@ -735,24 +710,12 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       console.log("isChecked true: ", this.installmentList[this.installmentSelectIndex]?.value);
 
       localStorage.setItem("checkInstallment", this.installmentList[this.installmentSelectIndex]?.value);
-    }else {
-      localStorage.setItem("checkInstallment", "")
-    }
-  }
-
-  onInstallmentChange(event: any) {
-    console.log('[onInstallmentChange] event: ', event.target.selectedIndex);
-    this.installmentSelectIndex = event.target.selectedIndex;
-    console.log("installmentSelectIndex", this.installmentSelectIndex);
-    this.qurryBills();
-    if (this.formLotteryArray.controls['checkInstallment'].value) {
-      localStorage.setItem("checkInstallment", this.installmentList[this.installmentSelectIndex]?.value);
     } else {
       localStorage.setItem("checkInstallment", "")
     }
-
-
   }
+
+
 
   onSumPriceBills() {
     let discount: number = 0;
@@ -762,14 +725,14 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     this.billsPrice = 0;
     this.billsRunNumberPrice = 0;
     for (let i = 0; i < this.formLotteryArray.value.lotteryArray.length - 1; i++) {
-      if(this.formLotteryArray.value.lotteryArray[i].number.length == 1) {
+      if (this.formLotteryArray.value.lotteryArray[i].number.length == 1) {
         tmpRunNumberBills.push({
           number: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].number),
           upper: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].upper),
           lower: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].lower),
           todd: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].todd)
         })
-      }else {
+      } else {
         tmpBills.push({
           number: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].number),
           upper: this.undefinedToNumber(this.formLotteryArray.value.lotteryArray[i].upper),
@@ -780,7 +743,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     }
 
     for (let r = 0; r < tmpRunNumberBills.length; r++) {
-      this.billsRunNumberPrice = this.billsRunNumberPrice +  parseInt(this.undefinedToNumber(tmpRunNumberBills[r]?.upper)) +  parseInt(this.undefinedToNumber(tmpRunNumberBills[r]?.lower));
+      this.billsRunNumberPrice = this.billsRunNumberPrice + parseInt(this.undefinedToNumber(tmpRunNumberBills[r]?.upper)) + parseInt(this.undefinedToNumber(tmpRunNumberBills[r]?.lower));
     }
 
     for (let n = 0; n < tmpBills.length; n++) {
@@ -806,7 +769,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     this.formLotteryArray.controls['price'].setValue(priceAll);
     this.formLotteryArray.controls['discount'].setValue(discount);
     this.formLotteryArray.controls['total_price'].setValue(priceAll - discount);
-    this.discountHtml = "ส่วนลด "+ this.discountForCustomer +"\n" + "test";
+    this.discountHtml = "ส่วนลด " + this.discountForCustomer + "\n" + "test";
   }
 
   onNavigateToContect() {
@@ -818,10 +781,9 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   onAddInstallment() {
     console.log("[onAddInstallment]");
     const modalRef = this.modalService.open(AddInstallmentComponent, { centered: true });
-
     modalRef.result.then((result) => {
       console.log("result: ", result);
-      if(result == "success"){
+      if (result == "success") {
         this.fetchInstallmentList();
       }
     });
@@ -830,23 +792,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   onRemoveInstallment() {
     console.log("[onRemoveInstallment]");
     console.log(this.installmentList[this.installmentSelectIndex].id);
-    remove(ref(this.db, 'installment/'+this.installmentList[this.installmentSelectIndex].id))
-    // const mostViewedPosts = query(ref(this.db, 'installment'), orderByChild("customer_name"), equalTo(this.customerList[this.customerSelectIndex].name));
-    // onValue(mostViewedPosts, async (res) => {
-    //   console.log("mostViewedPosts", res.val());
-    //   let tmpBillsByName: any;
-    //   if (res.val() != null) {
-    //     tmpBillsByName = Object.values(res?.val());
-    //   }
-
-    //   console.log("data", tmpBillsByName);
-
-    //   this.billsByNameList = tmpBillsByName;
-    //   console.log("billsByNameList: ", this.billsByNameList);
-
-    // });
-    
-
+    remove(ref(this.db, 'installment/' + this.installmentList[this.installmentSelectIndex].id))
   }
 
 
@@ -854,10 +800,8 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   openModallimitedNumber() {
     console.log("[onUnlimitedPayHalf]", this.installmentList[this.installmentSelectIndex]);
     this.installmentSelect = this.installmentList[this.installmentSelectIndex].limited_pay_half;
-
     const modalRef = this.modalService.open(LimitedNumberComponent, { fullscreen: true });
     modalRef.componentInstance.installmentList = this.installmentList[this.installmentSelectIndex];
-
   }
 
 }

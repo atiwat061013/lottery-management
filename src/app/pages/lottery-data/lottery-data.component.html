@@ -21,18 +21,17 @@
                                 {{ customer.label }}
                             </option>
                         </select>
-                        <div class="validation-errors">
-                            <ng-container *ngFor="let validation of validation_messages.customer">
-                                <div class="error-message"
-                                    *ngIf="formLotteryArray.get('customer').hasError(validation.type) && (formLotteryArray.get('customer').dirty || formLotteryArray.get('customer').touched)">
-                                    {{
-                                    validation.message }}
-                                </div>
-                            </ng-container>
-                        </div>
                         <button class="btn btn-outline-primary" type="button" (click)="onNavigateToContect()">
                             <em class="fa fa-address-book"></em>
                         </button>
+                    </div>
+                    <div class="validation-errors">
+                        <ng-container *ngFor="let validation of validation_messages.customer">
+                            <div class="error-message"
+                                [ngStyle]="{'visibility': formLotteryArray.get('customer').hasError(validation.type) && (formLotteryArray.get('customer').dirty || formLotteryArray.get('customer').touched) ? 'visible' : 'hidden'}">
+                                {{ validation.message }}
+                            </div>
+                        </ng-container>
                     </div>
                 </div>
             </div>
@@ -67,24 +66,23 @@
                             <span>{{ installment.label }}</span>
                         </option>
                     </select>
-                    <div class="validation-errors">
-                        <ng-container *ngFor="let validation of validation_messages.installment">
-                            <div class="error-message"
-                                *ngIf="formLotteryArray.get('installment').hasError(validation.type) && (formLotteryArray.get('installment').dirty || formLotteryArray.get('installment').touched)">
-                                {{
-                                validation.message }}
-                            </div>
-                        </ng-container>
-                    </div>
                     <button type="button" class="btn btn-outline-primary btn" (click)="onAddInstallment()">
                         <em class="fa fa-plus"></em>
                     </button>
                     <button type="button" class="btn btn-outline-primary btn" (click)="onRemoveInstallment()">
                         <em class="fa fa-minus"></em>
                     </button>
-                    <button type="button" data-bs-toggle="modal" (click)="openModallimitedNumber()" class="btn btn-outline-primary">กำหนดเลขอั้น</button>
+                    <button type="button" data-bs-toggle="modal" (click)="openModallimitedNumber()"
+                        class="btn btn-outline-primary">กำหนดเลขอั้น</button>
                     <button type="button" class="btn btn-outline-primary">กำหนดวงเงิน</button>
-
+                </div>
+                <div class="validation-errors">
+                    <ng-container *ngFor="let validation of validation_messages.installment">
+                        <div class="error-message"
+                            [ngStyle]="{'visibility': formLotteryArray.get('installment').hasError(validation.type) && (formLotteryArray.get('installment').dirty || formLotteryArray.get('installment').touched) ? 'visible' : 'hidden'}">
+                            {{ validation.message }}
+                        </div>
+                    </ng-container>
                 </div>
             </div>
 
@@ -113,7 +111,8 @@
                 </div> -->
                 </div>
                 <div formArrayName="lotteryArray">
-                    <ng-container *ngFor="let row of f?.lotteryArray['controls']; let i = index">
+                    <ng-container
+                        *ngFor="let row of this.formLotteryArray.controls?.lotteryArray['controls']; let i = index">
                         <div [formGroupName]="i" style="margin-bottom: 10px;">
 
                             <div class="row mt-2">
@@ -176,7 +175,8 @@
 
                 <div style="margin-left: auto; text-align: end; justify-content: end" class="mb-3 row">
                     <label style="display: flex;text-align: left; padding: 0; align-self: flex-end;" for="discount"
-                        class="col-sm-3 col-form-label">ส่วนลด <span class="fa fa-info-circle" data-toggle="tooltip" data-placement="bottom" [title]="discountHtml"></span></label>
+                        class="col-sm-3 col-form-label">ส่วนลด <span class="fa fa-info-circle" data-toggle="tooltip"
+                            data-placement="bottom" [title]="discountHtml"></span></label>
                     <div class="col-sm-3">
                         <input style="text-align: end;" readonly type="text" class="form-control" id="discount"
                             formControlName="discount">
@@ -204,48 +204,49 @@
 
             </div>
             <div class="col-6">
-                <ngx-datatable class="material ngx-datatable-lottery"
-                [rows]="billsByNameList" [headerHeight]="50" [footerHeight]="0" [rowHeight]="'auto'" [columnMode]="'force'">
+                <ngx-datatable class="material ngx-datatable-lottery" [rows]="billsByNameList" [headerHeight]="50"
+                    [footerHeight]="0" [rowHeight]="'auto'" [columnMode]="'force'">
 
-                <ngx-datatable-column prop="customer_name" [sortable]="true">
-                    <ng-template ngx-datatable-header-template>
-                        <span>ชื่อลูกค้า</span>
-                    </ng-template>
-                </ngx-datatable-column>
+                    <ngx-datatable-column prop="customer_name" [sortable]="true">
+                        <ng-template ngx-datatable-header-template>
+                            <span>ชื่อลูกค้า</span>
+                        </ng-template>
+                    </ngx-datatable-column>
 
-                <ngx-datatable-column prop="price" [sortable]="true">
-                    <ng-template ngx-datatable-header-template>
-                        <span>ยอดขาย</span>
-                    </ng-template>
-                </ngx-datatable-column>
+                    <ngx-datatable-column prop="price" [sortable]="true">
+                        <ng-template ngx-datatable-header-template>
+                            <span>ยอดขาย</span>
+                        </ng-template>
+                    </ngx-datatable-column>
 
-                <ngx-datatable-column prop="total_price" [sortable]="true">
-                    <ng-template ngx-datatable-header-template>
-                        <span>หลังหักส่วนลด</span>
-                    </ng-template>
-                </ngx-datatable-column>
+                    <ngx-datatable-column prop="total_price" [sortable]="true">
+                        <ng-template ngx-datatable-header-template>
+                            <span>หลังหักส่วนลด</span>
+                        </ng-template>
+                    </ngx-datatable-column>
 
 
-                <ngx-datatable-column prop="status" [sortable]="true">
-                    <ng-template ngx-datatable-header-template>
-                        <span>สถานะบิล</span>
-                    </ng-template>
-                </ngx-datatable-column>
+                    <ngx-datatable-column prop="status" [sortable]="true">
+                        <ng-template ngx-datatable-header-template>
+                            <span>สถานะบิล</span>
+                        </ng-template>
+                    </ngx-datatable-column>
 
-                <ngx-datatable-column name="similarity" [sortable]="false">
-                    <ng-template ngx-datatable-header-template>
-                        <!-- <span>Action / Remark</span> -->
-                    </ng-template>
+                    <ngx-datatable-column name="similarity" [sortable]="false">
+                        <ng-template ngx-datatable-header-template>
+                            <!-- <span>Action / Remark</span> -->
+                        </ng-template>
 
-                    <ng-template class="text-center" ngx-datatable-cell-template let-row="row" let-value="value"
-                        let-rowIndex="rowIndex">
+                        <ng-template class="text-center" ngx-datatable-cell-template let-row="row" let-value="value"
+                            let-rowIndex="rowIndex">
 
-                        <button type="button" class="btn btn-outline-primary btn-sm" (click)="onViewbills(rowIndex)">
-                            <em class="fa fa-search"></em>
-                        </button>
-                    </ng-template>
-                </ngx-datatable-column>
-            </ngx-datatable>
+                            <button type="button" class="btn btn-outline-primary btn-sm"
+                                (click)="onViewbills(rowIndex)">
+                                <em class="fa fa-search"></em>
+                            </button>
+                        </ng-template>
+                    </ngx-datatable-column>
+                </ngx-datatable>
             </div>
         </div>
     </div>
