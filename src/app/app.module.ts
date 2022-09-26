@@ -17,11 +17,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BillsComponent } from './pages/bills/bills.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { RandomNumberComponent } from './pages/random-number/random-number.component';
-import { AddAwardsLotteryComponent } from './modals/add-awards-lottery/add-awards-lottery.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AddInstallmentComponent } from './modals/add-installment/add-installment.component';
 import { LimitedNumberComponent } from './modals/limited-number/limited-number.component';
 import { ConfirmDialogComponent } from './modals/confirm-dialog/confirm-dialog.component';
+import { LoginComponent } from './pages/login/login.component';
+import { AddLineTokenComponent } from './modals/add-line-token/add-line-token.component';
+import { AddRewardLotteryComponent } from './modals/add-reward-lottery/add-reward-lottery.component';
 
 const app = initializeApp(environment.firebaseConfig);
 // const app = initializeApp({
@@ -45,10 +47,12 @@ const analytics = getAnalytics(app);
     ContectComponent,
     BillsComponent,
     RandomNumberComponent,
-    AddAwardsLotteryComponent,
     AddInstallmentComponent,
     LimitedNumberComponent,
     ConfirmDialogComponent,
+    LoginComponent,
+    AddLineTokenComponent,
+    AddRewardLotteryComponent,
   ],
   imports: [
     BrowserModule,

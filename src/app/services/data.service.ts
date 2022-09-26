@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { equalTo, getDatabase, onValue, orderByChild, query, ref } from 'firebase/database';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
 
+  db = getDatabase();
   constructor(private router: Router) {}
 
   async fetchData(method: any, url: any, data: any) {
@@ -43,6 +45,14 @@ export class DataService {
     };
 
     return fetch('https://notify-api.line.me/api/notify', requestOptions).then((response) => response.json());
+  }
+
+  fetchCustomerById(customerId: string) {
+    const starCountRef = query(ref(this.db, 'customer'), orderByChild('id'), equalTo(customerId));
+    onValue(starCountRef, async (snapshot) => {
+      const data = await snapshot.val();
+      console.log("data", data);
+    });
   }
 
 }

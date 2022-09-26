@@ -4,8 +4,10 @@ import { MenuComponent } from './menu/menu.component';
 import { BillsComponent } from './pages/bills/bills.component';
 import { ContectComponent } from './pages/contect/contect.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { LoginComponent } from './pages/login/login.component';
 import { LotteryDataComponent } from './pages/lottery-data/lottery-data.component';
 import { RandomNumberComponent } from './pages/random-number/random-number.component';
+import { AuthGuardService as AuthGuard } from './services/auth-guard.service';
 
 const routes: Routes = [
   {
@@ -19,25 +21,33 @@ const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        component: DashboardComponent
+        component: DashboardComponent,
+        canActivate: [AuthGuard]
       },
       {
         path: 'bills',
-        component: BillsComponent
+        component: BillsComponent,
+        canActivate: [AuthGuard]
       },
       {
         path: 'lotterydata',
-        component: LotteryDataComponent
+        component: LotteryDataComponent,
+        canActivate: [AuthGuard]
       },
       {
         path: 'contect',
-        component: ContectComponent
+        component: ContectComponent,
+        canActivate: [AuthGuard]
       },
       {
         path: 'reandomNumber',
         component: RandomNumberComponent
       },
     ],
+  },
+  {
+    path: "login",
+    component: LoginComponent
   }
 ];
 

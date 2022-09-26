@@ -1,0 +1,129 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" >เพิ่มงวดที่จะขาย</h5>
+        <button type="button" class="btn btn-close-modal" (click)="activeModal.dismiss('Cross click')">
+            <em class="fa-solid fa-xmark fa-xl"></em>
+        </button>
+    </div>
+    <div class="modal-body">
+      <form
+            class="form-floating"
+            [formGroup]="formReward"
+            (ngSubmit)="onSubmitReward()"
+          >
+            <div class="form-group mt-3 row">
+              <div class="row">
+                <div class="col-12">
+                  <label for="first">รางวัลที่ 1</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="first"
+                    maxlength="6"
+                    id="first"
+                    placeholder="กรอกรางวัลที่ 1"
+                  />
+                </div>
+              </div>
+            </div>
+  
+            <div class="form-group mt-3 row">
+              <div class="row">
+                <div class="col-6">
+                  <label for="last3f1">รางวัลเลขหน้า 3 ตัว</label>
+                </div>
+                <div class="col-6">
+                  <label for="last3f2">รางวัลเลขหน้า 3 ตัว</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="last3f1"
+                    maxlength="3"
+                    id="bank_account_number"
+                    placeholder="กรอกจำนวน"
+                  />
+                </div>
+                <div class="col-6">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="last3f2"
+                    maxlength="3"
+                    id="bank_account_number"
+                    placeholder="กรอกจำนวน"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group mt-3 row">
+              <div class="row">
+                <div class="col-6">
+                  <label for="last3b1">รางวัลเลขท้าย 3 ตัว</label>
+                </div>
+                <div class="col-6">
+                  <label for="last3b2">รางวัลเลขท้าย 3 ตัว</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="last3b1"
+                    maxlength="3"
+                    id="bank_account_number"
+                    placeholder="กรอกจำนวน"
+                  />
+                </div>
+                <div class="col-6">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="last3b2"
+                    maxlength="3"
+                    id="bank_account_number"
+                    placeholder="กรอกจำนวน"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group mt-3 row">
+              <div class="row">
+                <div class="col-12">
+                  <label for="last2">รางวัลเลขท้าย 2 ตัว</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="last2"
+                    maxlength="2"
+                    id="last2"
+                    placeholder="กรอกชื่อ"
+                  />
+                </div>
+              </div>
+            </div>
+  
+            <button
+              type="submit"
+              class="btn btn-primary mt-3"
+              [disabled]="!formReward.valid"
+            >
+              บันทึก
+            </button>
+          </form>
+    </div>
+  </div>

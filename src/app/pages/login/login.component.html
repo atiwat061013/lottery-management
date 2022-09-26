@@ -1,0 +1,33 @@
+<div class="box-form p-3">
+    <h3 class="text-center text-title">
+      <img src="assets/img/Logo-BNG.png" alt="BNG" width="35" /> eKYC
+    </h3>
+    <form [formGroup]="formLogin">
+      <div class="mb-3">
+        <label for="inputEmail" class="form-label">Email</label>
+        <input
+          type="text"
+          class="form-control"
+          id="inputEmail"
+          placeholder="Email"
+          formControlName="email"
+          name="email"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="inputPassword" class="form-label">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          id="inputPassword"
+          placeholder="Password"
+          formControlName="password"
+          name="password"
+        />
+      </div>
+      <div class="text-end">
+        <button type="button" class="btn btn-primary" (click)="login()" [disabled]="!formLogin.valid">Login</button>
+      </div>
+    </form>
+  </div>
+  

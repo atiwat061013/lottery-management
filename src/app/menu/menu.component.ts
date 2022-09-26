@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AddLineTokenComponent } from '../modals/add-line-token/add-line-token.component';
 
 @Component({
   selector: 'app-menu',
@@ -34,15 +36,18 @@ export class MenuComponent implements OnInit {
       icon: 'swap',
       child: [],
     },
-    // {
-    //   title: 'สุ่มเลข',
-    //   url: 'reandomNumber',
-    //   icon: 'swap',
-    //   child: [],
-    // },
+    {
+      title: 'สุ่มเลข',
+      url: 'reandomNumber',
+      icon: 'swap',
+      child: [],
+    },
   ];
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    public modalService: NgbModal
+    ) {
     console.log(this.router.url);
   }
 
@@ -82,7 +87,15 @@ export class MenuComponent implements OnInit {
   }
 
   signout() {
-    // this.dataService.forceLogout();
+    console.log("[signout]");
+    window.localStorage.clear();
+    this.router.navigateByUrl('login');
+  }
+
+  addLineToken() {
+    console.log("[addLineToken]");
+    const modalRef = this.modalService.open(AddLineTokenComponent ,{ centered: true });
+    // modalRef.componentInstance.installmentList = this.installmentList[this.installmentSelectIndex];
   }
 
 }

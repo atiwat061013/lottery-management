@@ -7,19 +7,28 @@
                 <div>
                     <form [formGroup]="formBills">
                         <select formControlName="installment" class="form-select form-select-sm"
-                        aria-label=".form-select-sm example" (change)="onInstallmentChange($event)">
-                        <option *ngFor="let installment of installmentList; let x = index" [ngValue]="installment.value"
-                            class="dropdown-item">
-                            {{ installment.label }}
-                        </option>
-                    </select>
+                            aria-label=".form-select-sm example" (change)="onInstallmentChange($event)">
+                            <option *ngFor="let installment of installmentList; let x = index"
+                                [ngValue]="installment.value" class="dropdown-item">
+                                {{ installment.label }}
+                            </option>
+                        </select>
                     </form>
                 </div>
             </div>
 
             <div>
+                <!-- <button type="button" class="btn btn-outline-primary btn" (click)="getInstallmentAward()">
+                    ดึงข้อมูลผลสลาก
+                </button> -->
                 <button type="button" class="btn btn-outline-primary btn" (click)="openModal()">
-                    <em class="fa fa-floppy-o"></em>
+                    บันทึกผลรางวัล
+                </button>
+                <button type="button" class="btn btn-outline-primary btn" (click)="onCheckReward()">
+                    ตรวจบิล
+                </button>
+                <button type="button" class="btn btn-outline-primary btn" (click)="notifyToLine()">
+                    แจ้งเตือนไปที่ LINE
                 </button>
             </div>
 
@@ -34,7 +43,8 @@
                 <p>รางวัลที่ 1</p>
                 <div class="box-flex">
                     <h1 class="count-num-left" style="color: #3564af">
-                        {{ "รอบันทึก" }}
+                        {{ installmentNow?.award?.first == undefined ? "รอผล" :
+                        installmentNow?.award?.first }}
                     </h1>
                 </div>
             </div>
@@ -44,10 +54,12 @@
                 <p>รางวัลเลขหน้า 3 ตัว</p>
                 <div class="box-flex">
                     <h1 style="color: #3564af">
-                        {{ 834 }}
+                        {{ installmentNow?.award?.last3f1 == undefined ? "รอผล" :
+                        installmentNow?.award?.last3f1 }}
                     </h1>
                     <h1 style="color: #3564af">
-                        {{ 159 }}
+                        {{ installmentNow?.award?.last3f2 == undefined ? "รอผล" :
+                        installmentNow?.award?.last3f2 }}
                     </h1>
                 </div>
             </div>
@@ -57,11 +69,13 @@
                 <p>รางวัลเลขท้าย 3 ตัว</p>
                 <div class="box-flex">
                     <h1 style="color: #3564af">
-                        {{ 279 }}
+                        {{ installmentNow?.award?.last3b1 == undefined ? "รอผล" :
+                        installmentNow?.award?.last3f2 }}
                     </h1>
 
                     <h1 style="color: #3564af">
-                        {{ 061 }}
+                        {{ installmentNow?.award?.last3b2 == undefined ? "รอผล" :
+                        installmentNow?.award?.last3f2 }}
                     </h1>
                 </div>
             </div>
@@ -71,7 +85,8 @@
                 <p>รางวัลเลขท้าย 2 ตัว</p>
                 <div class="box-flex">
                     <h1 class="count-num" style="color: #3564af">
-                        {{ 53 }}
+                        {{ installmentNow?.award?.last2 == undefined ? "รอผล" :
+                        installmentNow?.award?.last2 }}
                     </h1>
                 </div>
             </div>
@@ -82,9 +97,54 @@
 <div class="box-data-table my-3">
     <div class="row mt-3">
         <div class="col-12">
-            <ngx-datatable class="material ngx-datatable-daily" [loadingIndicator]="isLoadingtablebills"
-                [rows]="billsList" [headerHeight]="50" [footerHeight]="0" [rowHeight]="'auto'" [columnMode]="'force'">
+            <ngx-datatable class="material ngx-datatable-daily" #tableBills class="material ngx-datatable-daily"
+                [limit]="rowLimit" [loadingIndicator]="isLoadingtablebills" [rows]="billsList" [columnMode]="'force'"
+                [headerHeight]="50" [footerHeight]="100" [rowHeight]="'auto'">
 
+
+                <ngx-datatable-footer>
+                    <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize"
+                        let-selectedCount="selectedCount" let-curPage="curPage" let-offset="offset">
+                        <div style="padding: 5px; width: 100%">
+                            <div>
+                                <strong>รวมทั้งหมด {{ rowCount | number }} คน</strong>
+                            </div>
+                        </div>
+
+                        <!-- <div class="dropdown">
+                            <button style="z-index: 100" class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown">
+                                Show: {{ rowLimit }} items
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <button class="dropdown-item" type="button" *ngFor="let limit of LIMITS"
+                                        (click)="limitEmp(limit.value)">
+                                        แสดง {{ limit.value }} รายการ
+                                    </button>
+                                </li>
+                            </ul>
+                        </div> -->
+                        <div ngbDropdown container="body">
+                            <button type="button" class="btn btn-outline-primary btn-sm" ngbDropdownToggle>Actions</button>
+                            <ul ngbDropdownMenu>
+                                <li>
+                                    <button class="dropdown-item" type="button" *ngFor="let limit of LIMITS"
+                                        (click)="limitEmp(limit.value)">
+                                        แสดง {{ limit.value }} รายการ
+                                    </button>
+                                </li>
+                            </ul>
+                          </div>
+                          
+                        <datatable-pager [pagerLeftArrowIcon]="'datatable-icon-left'"
+                            [pagerRightArrowIcon]="'datatable-icon-right'" [pagerPreviousIcon]="'datatable-icon-prev'"
+                            [pagerNextIcon]="'datatable-icon-skip'" [page]="curPage" [size]="pageSize"
+                            [count]="rowCount" [hidden]="!(rowCount / pageSize > 1)"
+                            (change)="tableBills.onFooterPage($event)">
+                        </datatable-pager>
+                    </ng-template>
+                </ngx-datatable-footer>
                 <ngx-datatable-column prop="customer_name" [sortable]="true">
                     <ng-template ngx-datatable-header-template>
                         <span>ชื่อลูกค้า</span>
@@ -97,12 +157,6 @@
                     </ng-template>
                 </ngx-datatable-column>
 
-                <!-- <ngx-datatable-column prop="total_price" [sortable]="true">
-                    <ng-template ngx-datatable-header-template>
-                        <span>หลังหักส่วนลด</span>
-                    </ng-template>
-                </ngx-datatable-column> -->
-
                 <ngx-datatable-column prop="total_price" [sortable]="true">
                     <ng-template ngx-datatable-header-template>
                         <span>ราคาทั้งสิน</span>
@@ -110,15 +164,20 @@
                 </ngx-datatable-column>
 
 
-                <ngx-datatable-column prop="discount" [sortable]="true">
+                <ngx-datatable-column prop="status" [sortable]="true">
                     <ng-template ngx-datatable-header-template>
                         <span>สถานะบิล</span>
                     </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column prop="discount" [sortable]="true">
+                <ngx-datatable-column prop="sum_bill" [sortable]="true">
                     <ng-template ngx-datatable-header-template>
                         <span>กำไร/ขาดทุน</span>
+                    </ng-template>
+                    <ng-template class="text-center" ngx-datatable-cell-template let-row="row" let-value="value"
+                        let-rowIndex="rowIndex">
+                        <!-- {{ row?.sum_bill?.reward == undefined ? "-"+row?.total_price : row?.sum_bill?.reward }} -->
+                        {{ row?.sum_bill?.reward == undefined ? 0 - row?.total_price : row?.sum_bill?.reward - row?.total_price  }}
                     </ng-template>
                 </ngx-datatable-column>
 
