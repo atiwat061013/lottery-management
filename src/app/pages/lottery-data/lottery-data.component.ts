@@ -762,8 +762,10 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
     priceAll = this.billsPrice + this.billsRunNumberPrice;
     console.log("[onSumPriceBills] priceAll", priceAll);
 
-    discount = (this.billsPrice * this.discountForCustomer) / 100;
-    console.log("[onSumPriceBills] discount", discount);
+    
+    if(priceAll >= 100){
+      discount = (this.billsPrice * this.discountForCustomer) / 100;
+    }
 
 
     this.formLotteryArray.controls['price'].setValue(priceAll);

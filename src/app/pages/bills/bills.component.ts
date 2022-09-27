@@ -43,6 +43,10 @@ export class BillsComponent implements OnInit {
       { value: 500 },
       { value: 1000 },
     ];
+
+    this.formBills = this.formBuilder.group({
+      installment: new FormControl('', [Validators.required]),
+    });
   }
 
   ngAfterViewChecked() {
@@ -50,11 +54,9 @@ export class BillsComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.fetchCustomerList();
-    this.fetchInstallmentList();
-    this.formBills = this.formBuilder.group({
-      installment: new FormControl('', [Validators.required]),
-    });
+    
+    await this.fetchCustomerList();
+    await this.fetchInstallmentList();
 
   }
 
@@ -172,7 +174,7 @@ export class BillsComponent implements OnInit {
     });
   }
 
-  fetchCustomerList() {
+  async fetchCustomerList() {
     const starCountRef = ref(this.db, 'customer/');
     onValue(starCountRef, async (snapshot) => {
       const data = await snapshot.val();
@@ -198,7 +200,7 @@ export class BillsComponent implements OnInit {
         });
       });
 
-      this.customerList = tmpName;
+      this.customerList = await tmpName;
     });
   }
 
@@ -224,7 +226,7 @@ export class BillsComponent implements OnInit {
             installment_date: data[key].installment_date,
             create_at: data[key].create_at,
             award: data[key].award,
-            unlimited_pay_half: data[key].unlimited_pay_half,
+            limited_pay_half: data[key].limited_pay_half,
           });
           tmpInstallment.sort((a: any, b: any) => {
             return a.create_at - b.create_at;
@@ -240,10 +242,10 @@ export class BillsComponent implements OnInit {
 
 
       //set last installment
-      this.formBills.controls['installment'].setValue(this.installmentList[this.installmentList.length - 1].value);
+      // this.formBills.controls['installment'].setValue(this.installmentList[this.installmentList.length - 1].value);
       this.installmentNow = this.installmentList[this.installmentList.length - 1];
       console.log("[fetchInstallmentList]", this.installmentNow);
-      this.fetchBillsList(this.installmentNow.installment_date);
+      // this.fetchBillsList(this.installmentNow.installment_date);
 
     });
   }
@@ -256,11 +258,14 @@ export class BillsComponent implements OnInit {
       const customer = this.customerList.find((data: any) => {
         return data.id == this.billsList[b].customer_id;
       });
-      let bill_win = [];
+
+      let bill_win: any = [];
       let reward: number = 0;
       for (let i = 0; i < this.billsList[b].item_buy.length; i++) {
-        
-        if(this.billsList[b].item_buy[i].number.length == 1){
+
+
+
+        if (this.billsList[b].item_buy[i].number.length == 1) {
           //run number
           if (
             this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last2[0] && this.billsList[b].item_buy[i].lower != 0 ||
@@ -290,53 +295,101 @@ export class BillsComponent implements OnInit {
             });
             reward += won;
           }
-        }else if(this.billsList[b].item_buy[i].number.length == 2){
+        } else if (this.billsList[b].item_buy[i].number.length == 2) {
           //two number lower
           if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last2) {
-            let won: number = this.billsList[b].item_buy[i].lower * customer.pay_rate_two_number;
-            bill_win.push({
-              number: this.billsList[b].item_buy[i].number,
-              price: this.billsList[b].item_buy[i].lower,
-              type: "เลข2ตัวล่าง",
-              reward: won
-            });
-            reward += won;
+              if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
+                let won: number = (this.billsList[b].item_buy[i].lower / 2) * customer.pay_rate_two_number;
+                bill_win.push({
+                  number: this.billsList[b].item_buy[i].number,
+                  price: this.billsList[b].item_buy[i].lower,
+                  type: "เลข2ตัวล่างจ่ายครึ่ง",
+                  reward: won
+                });
+                reward += won;
+              } else {
+                let won: number = this.billsList[b].item_buy[i].lower * customer.pay_rate_two_number;
+                bill_win.push({
+                  number: this.billsList[b].item_buy[i].number,
+                  price: this.billsList[b].item_buy[i].lower,
+                  type: "เลข2ตัวล่างจ่ายครึ่ง",
+                  reward: won
+                });
+                reward += won;
+              }
           }
           //two number upper
           if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.first.substr(4, 6)) {
-            let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_two_number;
-            bill_win.push({
-              number: this.billsList[b].item_buy[i].number,
-              price: this.billsList[b].item_buy[i].upper,
-              type: "เลข2ตัวบน",
-              reward: won
-            });
-            reward += won;
+              if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
+                let won: number = (this.billsList[b].item_buy[i].upper / 2) * customer.pay_rate_two_number;
+                bill_win.push({
+                  number: this.billsList[b].item_buy[i].number,
+                  price: this.billsList[b].item_buy[i].upper,
+                  type: "เลข2ตัวบนจ่ายครึ่ง",
+                  reward: won
+                });
+                reward += won;
+              } else {
+                let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_two_number;
+                bill_win.push({
+                  number: this.billsList[b].item_buy[i].number,
+                  price: this.billsList[b].item_buy[i].upper,
+                  type: "เลข2ตัวบน",
+                  reward: won
+                });
+                reward += won;
+              }
+
           }
-        }else if(this.billsList[b].item_buy[i].number.length == 3){
+        } else if (this.billsList[b].item_buy[i].number.length == 3) {
           //three number
           if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.first.substr(3, 6)) {
-            let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_three_straight;
-            bill_win.push({
-              number: this.billsList[b].item_buy[i].number,
-              price: this.billsList[b].item_buy[i].upper,
-              type: "3ตัวตรง",
-              reward: won
-            });
-            reward += won;
+              if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
+                let won: number = (this.billsList[b].item_buy[i].upper / 2) * customer.pay_rate_three_straight;
+                bill_win.push({
+                  number: this.billsList[b].item_buy[i].number,
+                  price: this.billsList[b].item_buy[i].upper,
+                  type: "3ตัวตรงจ่ายครึ่ง",
+                  reward: won
+                });
+                reward += won;
+              } else {
+                let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_three_straight;
+                bill_win.push({
+                  number: this.billsList[b].item_buy[i].number,
+                  price: this.billsList[b].item_buy[i].upper,
+                  type: "3ตัวตรง",
+                  reward: won
+                });
+                reward += won;
+              }
+
+
           } else if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3f1 ||
             this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3f2 ||
             this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3b1 ||
             this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3b2) {
             if (this.billsList[b].item_buy[i].upper != 0) {
-              let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_three_lower;
-              bill_win.push({
-                number: this.billsList[b].item_buy[i].number,
-                price: this.billsList[b].item_buy[i].upper,
-                type: "3ตัวล่าง",
-                reward: won
-              });
-              reward += won;
+                if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
+                  let won: number = (this.billsList[b].item_buy[i].upper / 2) * customer.pay_rate_three_lower;
+                  bill_win.push({
+                    number: this.billsList[b].item_buy[i].number,
+                    price: this.billsList[b].item_buy[i].upper,
+                    type: "3ตัวล่างจ่ายครึ่ง",
+                    reward: won
+                  });
+                  reward += won;
+                } else {
+                  let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_three_lower;
+                  bill_win.push({
+                    number: this.billsList[b].item_buy[i].number,
+                    price: this.billsList[b].item_buy[i].upper,
+                    type: "3ตัวล่าง",
+                    reward: won
+                  });
+                  reward += won;
+                }
+
             }
           } else {
             let numLength1 = this.installmentNow?.award?.first.substr(3, 6)[0];
@@ -357,19 +410,30 @@ export class BillsComponent implements OnInit {
               this.billsList[b].item_buy[i].number == threeSwapNumber6
             ) {
               if (this.billsList[b].item_buy[i].todd != 0) {
-                let won: number = this.billsList[b].item_buy[i].todd * customer.pay_rate_three_todd;
-                bill_win.push({
-                  number: this.billsList[b].item_buy[i].number,
-                  price: this.billsList[b].item_buy[i].todd,
-                  type: "3ตัวโต๊ส",
-                  reward: won
-                });
-                reward += won;
+                  if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
+                    let won: number = (this.billsList[b].item_buy[i].todd / 2) * customer.pay_rate_three_todd;
+                    bill_win.push({
+                      number: this.billsList[b].item_buy[i].number,
+                      price: this.billsList[b].item_buy[i].todd,
+                      type: "3ตัวโต๊สจ่ายครึ่ง",
+                      reward: won
+                    });
+                    reward += won;
+                  } else {
+                    let won: number = this.billsList[b].item_buy[i].todd * customer.pay_rate_three_todd;
+                    bill_win.push({
+                      number: this.billsList[b].item_buy[i].number,
+                      price: this.billsList[b].item_buy[i].todd,
+                      type: "3ตัวโต๊ส",
+                      reward: won
+                    });
+                    reward += won;
+                  }
+
               }
             }
           }
         }
-
 
         if (i == this.billsList[b].item_buy.length - 1) {
           console.log("last");
@@ -380,6 +444,8 @@ export class BillsComponent implements OnInit {
           }
 
         }
+
+
 
       }
       console.log("[billsList]", this.billsList[b])
@@ -414,6 +480,22 @@ export class BillsComponent implements OnInit {
 
     }
     // console.log("[result]", result)
+  }
+
+  checkHaftPay(number: any): boolean {
+    const limited_pay_half = this.installmentNow.limited_pay_half
+    let istrue: boolean = false;
+    limited_pay_half.find((limited_num: any) => {
+      if(number == limited_num){
+        console.log("[checkHaftPay] true");
+        istrue = true
+      }else {
+        console.log("[checkHaftPay] false");
+        istrue = false
+      }
+    });
+
+    return istrue;
   }
 
   openModal() {
