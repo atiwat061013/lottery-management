@@ -312,7 +312,7 @@ export class BillsComponent implements OnInit {
                 bill_win.push({
                   number: this.billsList[b].item_buy[i].number,
                   price: this.billsList[b].item_buy[i].lower,
-                  type: "เลข2ตัวล่างจ่ายครึ่ง",
+                  type: "เลข2ตัวล่าง",
                   reward: won
                 });
                 reward += won;
@@ -320,6 +320,8 @@ export class BillsComponent implements OnInit {
           }
           //two number upper
           if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.first.substr(4, 6)) {
+            console.log("[billsList] two number upper --> ", this.installmentNow?.award?.first.substr(4, 6) + " number --> "+ this.billsList[b].item_buy[i].number);
+            
               if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
                 let won: number = (this.billsList[b].item_buy[i].upper / 2) * customer.pay_rate_two_number;
                 bill_win.push({
@@ -484,18 +486,24 @@ export class BillsComponent implements OnInit {
 
   checkHaftPay(number: any): boolean {
     const limited_pay_half = this.installmentNow.limited_pay_half
-    let istrue: boolean = false;
-    limited_pay_half.find((limited_num: any) => {
-      if(number == limited_num){
+    for (let i = 0; i < limited_pay_half.length; i++) {
+      if(limited_pay_half[i].number == number){
         console.log("[checkHaftPay] true");
-        istrue = true
-      }else {
-        console.log("[checkHaftPay] false");
-        istrue = false
+        return true
       }
-    });
-
-    return istrue;
+    }
+    return false
+    // limited_pay_half.find((limited_num: any) => {
+    //   console.log("[checkHaftPay] number --> ", number + " limited_num --> "+ limited_num.number);
+      
+    //   if(number == limited_num.number){
+    //     console.log("[checkHaftPay] true");
+    //     istrue = true
+    //   }else {
+    //     console.log("[checkHaftPay] false");
+    //     istrue = false
+    //   }
+    // });
   }
 
   openModal() {

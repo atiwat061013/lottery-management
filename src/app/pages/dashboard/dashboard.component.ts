@@ -50,7 +50,7 @@ export class DashboardComponent implements OnInit {
 
       let tmpInstallment: any = [];
       tmpInstallment.push({
-        label: 'รวมงวด',
+        label: 'รวมทุกงวด',
         value: '',
         id: '',
         installment_date: 'รวมงวด'
@@ -163,7 +163,7 @@ export class DashboardComponent implements OnInit {
     const baseUrl = `https://us-central1-node-line-notify.cloudfunctions.net/lottery/api/notify`;
     const payload = JSON.stringify({
       token: "HdqFyJFYYDQWQHf9DZwDTtxlRn2FrHAy4KK3Kv170iI",
-      message: "แจ้งยอดเงินคงเหลือ\nรายได้ทั้งหมด: " + this.total_price + "\nรายจ่าย: " + this.reward + "\nกำไรขาดทุน: " + (this.total_price - this.reward)
+      message: "แจ้งยอดเงินคงเหลือ\n"+ this.installmentNow.label.toString() +": "+ this.total_price + "\nรายจ่าย: " + this.reward + "\nกำไรขาดทุน: " + (this.total_price - this.reward)
     })
     this.dataService.fetchData('POST', baseUrl, payload).then((res: any) => {
       console.log("res => ", res);
