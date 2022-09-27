@@ -77,9 +77,9 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       discount: new FormControl('', [Validators.required]),
       total_price: new FormControl('', [Validators.required]),
     });
-
+    await this.fetchInstallmentList();
     this.fetchCustomerList();
-    this.fetchInstallmentList();
+    
 
 
   }
@@ -618,6 +618,9 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   async qurryBills() {
     console.log("[qurryBills] ", this.customerList);
     console.log("[qurryBills] ", this.customerSelectIndex);
+    console.log("[qurryBills] ", this.installmentList[this.installmentSelectIndex].installment_date);
+    
+    
     const mostViewedPosts = query(ref(this.db, 'bills'), orderByChild("customer_name"), equalTo(this.customerList[this.customerSelectIndex].name));
     onValue(mostViewedPosts, async (res) => {
       console.log("mostViewedPosts", res.val());
@@ -627,7 +630,11 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       }
 
       console.log("data", tmpBillsByName);
-      this.billsByNameList = tmpBillsByName;
+      this.billsByNameList = tmpBillsByName.filter((res: any) => {
+        console.log("[tmpBillsByName.filter] ", res.installment_date);
+        console.log("[tmpBillsByName.filter] ", this.installmentList[this.installmentSelectIndex].installment_date);
+        return res.installment_date == this.installmentList[this.installmentSelectIndex].installment_date
+      });
       console.log("billsByNameList: ", this.billsByNameList);
     });
   }
