@@ -11,12 +11,14 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
 
 :root {
-  --color-primary: #7380ec;
+  --color-primary: #461873;
+  --color-active: #6910A8;
+  --color-disabled: #6910A8;
   --color-danger: #ff7782;
   --color-success: #41f1b6;
   --color-warning: #ffbb55;
   --color-white: #fff;
-  --color-info-light: #dce4eb;
+  --color-info-light: #F7EBFD;
   --color-light: rgba(132, 139, 200, 0.18);
   --color-primary-variant: #111e88;
   --color-dark-variant: #677483;
@@ -32,7 +34,8 @@
   --box-shadow: 0 2rem 3rem var(--color-light);
 }
 
-html,body {
+html,
+body {
   font-family: "Bai Jamjuree", sans-serif !important;
   // background-color: #e5e5e5 !important;
   background-color: var(--color-background);
@@ -47,21 +50,24 @@ html,body {
     border-top-right-radius: 4px;
 
     .datatable-header-cell {
-      background-color: #dce4eb !important;
+      background-color: #F7EBFD !important;
       color: #000000 !important;
       font-size: 16px !important;
       font-weight: bold;
     }
   }
+
   .datatable-body {
-    background-color: #dce4eb;
+    background-color: #F7EBFD;
     border-bottom-right-radius: 4px !important;
     border-bottom-left-radius: 4px !important;
+
     .datatable-row-wrapper {
       background-color: #fff;
       margin: 8px;
       border-radius: 4px;
     }
+
     // .datatable-row-wrapper:hover {
     //   background-color: rgb(255, 0, 0);
     //   margin: 8px;
@@ -69,11 +75,11 @@ html,body {
     // }
   }
 
-    // .datatable-body-cell:hover {
-    //   background-color: #0adb76e7;
-    //   transition-property: background;
-    //   transition-duration: 0.3s;
-    //   transition-timing-function: linear; }
+  // .datatable-body-cell:hover {
+  //   background-color: #0adb76e7;
+  //   transition-property: background;
+  //   transition-duration: 0.3s;
+  //   transition-timing-function: linear; }
 
   .datatable-footer {
     border-top: none !important;
@@ -82,22 +88,25 @@ html,body {
 
 .ngx-datatable-daily {
   box-shadow: none !important;
+
   .datatable-header {
     border-bottom: none !important;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 
     .datatable-header-cell {
-      background-color: #dce4eb !important;
+      background-color: #F7EBFD !important;
       color: #000000 !important;
       font-size: 18px !important;
       font-weight: bold;
     }
   }
+
   .datatable-body {
-    background-color: #dce4eb;
+    background-color: #F7EBFD;
     border-bottom-right-radius: 4px !important;
     border-bottom-left-radius: 4px !important;
+
     .datatable-row-wrapper {
       background-color: #fff;
       margin: 8px;
@@ -106,11 +115,12 @@ html,body {
   }
 
   .datatable-body-row:hover .datatable-row-group {
-    background-color: #dce4eb;
+    background-color: #F7EBFD;
     transition-property: background;
     transition-duration: 0.3s;
     transition-timing-function: linear;
   }
+
   .datatable-footer {
     border-top: none !important;
   }
@@ -120,6 +130,7 @@ html,body {
   // overflow-x: visible !important;
   // overflow-y: visible !important;
   box-shadow: none !important;
+
   .datatable-header {
     border-bottom: none !important;
     border-top-left-radius: 4px;
@@ -132,23 +143,28 @@ html,body {
       font-weight: bold;
     }
   }
+
   .datatable-body {
     background-color: #eee;
     border-bottom-right-radius: 4px !important;
     border-bottom-left-radius: 4px !important;
+
     .datatable-row-wrapper {
       background-color: #fff !important;
       margin: 0px 16px 0px 16px;
       border-bottom: 1px solid #A1A1A1;
     }
   }
+
   .datatable-body-cell {
     overflow-y: visible !important;
     overflow-x: visible !important;
   }
+
   .datatable-body .datatable-scroller {
     width: 100% !important
   }
+
   // .datatable-body-row:hover .datatable-row-group {
   //   background-color: #fff !important;
   //   transition-property: none !important;
@@ -167,6 +183,59 @@ html,body {
 .validation-errors {
   color: red;
   font-size: 14px;
+}
+
+.transparent-modal .modal-content {
+  background: transparent !important;
+  border: 0 !important;
+}
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:visited {
+  background-color: var(--color-primary) !important;
+  border: var(--color-primary) !important;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--color-primary) !important;
+  --bs-btn-border-color: var(--color-primary) !important;
+  --bs-btn-hover-bg: var(--color-primary) !important;
+  --bs-btn-hover-border-color: var(--color-primary) !important;
+  --bs-btn-focus-shadow-rgb: 13, 110, 253;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--color-primary) !important;
+  --bs-btn-active-border-color: var(--color-primary) !important;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: var(--color-primary) !important;
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: var(--color-primary) !important;
+  --bs-gradient: none;
+}
+
+.btn.btn-primary[disabled] {
+  background-color: var(--color-disabled) !important;
+}
+
+.form-check-input:checked {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+input[type="checkbox"], input[type="checkbox"]:focus {
+  border-color: var(--color-primary) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+select, select:focus {
+  border-color: var(--color-primary) !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* Importing Bootstrap SCSS file. */

@@ -8,6 +8,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddInstallmentComponent } from 'src/app/modals/add-installment/add-installment.component';
 import { LimitedNumberComponent } from 'src/app/modals/limited-number/limited-number.component';
 import { ConfirmDialogComponent } from 'src/app/modals/confirm-dialog/confirm-dialog.component';
+import { LoadingComponent } from 'src/app/modals/loading/loading.component';
 
 @Component({
   selector: 'app-lottery-data',
@@ -58,7 +59,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
 
   showViewbills: boolean = false;
   billsByNameInView: any = [];
-
+  modalLoading: any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -497,6 +498,7 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
   }
 
   onSubmit() {
+    this.modalLoading =  this.modalService.open(LoadingComponent, { centered: true, modalDialogClass: 'transparent-modal', backdrop : 'static' });
     this.formLotteryArray.markAllAsTouched();
     console.log("[onSubmit] length => ", this.formLotteryArray.value.lotteryArray.length);
     console.log("[onSubmit] price => ", this.formLotteryArray.value);
@@ -538,17 +540,20 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
         console.log('Data saved successfully! res=> ', res);
         this.lotteryArray.clear();
         this.addItem();
-
+        this.modalLoading.close();
       }).catch((error) => {
         // The write failed...
         console.log('error', error);
+        this.modalLoading.close();
       });
     }else {
+      this.modalLoading.close();
       // this.formLotteryArray.invalid
     }
   }
 
   onEdit() {
+    this.modalLoading =  this.modalService.open(LoadingComponent, { centered: true, modalDialogClass: 'transparent-modal', backdrop : 'static' });
     console.log("[onEdit] billsByNameInView=> ", this.billsByNameInView);
     let tmpBills = [];
     for (let i = 0; i < this.formLotteryArray.value.lotteryArray.length - 1; i++) {
@@ -573,10 +578,12 @@ export class LotteryDataComponent implements AfterViewInit, OnInit {
       this.showViewbills = false;
       this.lotteryArray.clear();
       this.addItem();
+      this.modalLoading.close();
     }).catch((error) => {
       // The write failed...
       this.showViewbills = false;
       console.log('error', error);
+      this.modalLoading.close();
     });
 
   }

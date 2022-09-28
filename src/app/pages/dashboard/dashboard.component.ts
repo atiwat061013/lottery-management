@@ -78,11 +78,10 @@ export class DashboardComponent implements OnInit {
       console.log("[fetchInstallmentList]", this.installmentList);
 
 
-
-      this.formInstallment.controls['installment'].setValue(this.installmentList[this.installmentList.length - 1].value);
-      this.installmentNow = this.installmentList[this.installmentList.length - 1];
-      console.log("[fetchInstallmentList]", this.installmentNow);
-      this.fetchBillsList(this.installmentNow.installment_date);
+      // this.formInstallment.controls['installment'].setValue(this.installmentList[this.installmentList.length - 1].value);
+      // this.installmentNow = this.installmentList[this.installmentList.length - 1];
+      // console.log("[fetchInstallmentList]", this.installmentNow);
+      this.fetchBillsList("รวมงวด");
 
     });
   }

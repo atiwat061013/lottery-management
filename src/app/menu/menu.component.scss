@@ -21,7 +21,7 @@
     padding: 48px 0 0; /* Height of navbar */
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
     transition: 0.3s all ease-in-out;
-    background-color: #193769 !important;
+    background-color: var(--color-primary) !important;
   }
   
   .avatar {
@@ -50,7 +50,7 @@
   }
   
   .sidebar .nav-link.active {
-    background-color: #345d92;
+    background-color: var(--color-active);
     color: #fff;
   }
   
@@ -60,7 +60,7 @@
   }
   
   .sidebar .nav-link:hover {
-    background-color: #345d92;
+    background-color: var(--color-active);
     color: #fff;
   }
   
@@ -76,16 +76,16 @@
     margin-right: 15px;
     margin-top: -10px;
     cursor: pointer;
-    color: #022e6b;
+    color: var(--color-primary);
   }
   .title-page {
-    color: #022e6b;
+    color: var(--color-primary);
   }
   .navbar-brand {
     padding-top: 0.75rem;
     padding-bottom: 0.75rem;
     background-color: #fff;
-    color: #022e6b;
+    color: var(--color-primary);
   }
   
   .navbar .navbar-toggler {
