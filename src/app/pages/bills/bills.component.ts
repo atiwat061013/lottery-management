@@ -54,7 +54,7 @@ export class BillsComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    
+
     await this.fetchCustomerList();
     await this.fetchInstallmentList();
 
@@ -298,73 +298,73 @@ export class BillsComponent implements OnInit {
         } else if (this.billsList[b].item_buy[i].number.length == 2) {
           //two number lower
           if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last2) {
-              if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
-                let won: number = (this.billsList[b].item_buy[i].lower / 2) * customer.pay_rate_two_number;
-                bill_win.push({
-                  number: this.billsList[b].item_buy[i].number,
-                  price: this.billsList[b].item_buy[i].lower,
-                  type: "เลข2ตัวล่างจ่ายครึ่ง",
-                  reward: won
-                });
-                reward += won;
-              } else {
-                let won: number = this.billsList[b].item_buy[i].lower * customer.pay_rate_two_number;
-                bill_win.push({
-                  number: this.billsList[b].item_buy[i].number,
-                  price: this.billsList[b].item_buy[i].lower,
-                  type: "เลข2ตัวล่าง",
-                  reward: won
-                });
-                reward += won;
-              }
+            if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
+              let won: number = (this.billsList[b].item_buy[i].lower / 2) * customer.pay_rate_two_number;
+              bill_win.push({
+                number: this.billsList[b].item_buy[i].number,
+                price: this.billsList[b].item_buy[i].lower,
+                type: "เลข2ตัวล่างจ่ายครึ่ง",
+                reward: won
+              });
+              reward += won;
+            } else {
+              let won: number = this.billsList[b].item_buy[i].lower * customer.pay_rate_two_number;
+              bill_win.push({
+                number: this.billsList[b].item_buy[i].number,
+                price: this.billsList[b].item_buy[i].lower,
+                type: "เลข2ตัวล่าง",
+                reward: won
+              });
+              reward += won;
+            }
           }
           //two number upper
           if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.first.substr(4, 6)) {
-            console.log("[billsList] two number upper --> ", this.installmentNow?.award?.first.substr(4, 6) + " number --> "+ this.billsList[b].item_buy[i].number);
-            
-              if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
-                let won: number = (this.billsList[b].item_buy[i].upper / 2) * customer.pay_rate_two_number;
-                bill_win.push({
-                  number: this.billsList[b].item_buy[i].number,
-                  price: this.billsList[b].item_buy[i].upper,
-                  type: "เลข2ตัวบนจ่ายครึ่ง",
-                  reward: won
-                });
-                reward += won;
-              } else {
-                let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_two_number;
-                bill_win.push({
-                  number: this.billsList[b].item_buy[i].number,
-                  price: this.billsList[b].item_buy[i].upper,
-                  type: "เลข2ตัวบน",
-                  reward: won
-                });
-                reward += won;
-              }
+            console.log("[billsList] two number upper --> ", this.installmentNow?.award?.first.substr(4, 6) + " number --> " + this.billsList[b].item_buy[i].number);
+
+            if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
+              let won: number = (this.billsList[b].item_buy[i].upper / 2) * customer.pay_rate_two_number;
+              bill_win.push({
+                number: this.billsList[b].item_buy[i].number,
+                price: this.billsList[b].item_buy[i].upper,
+                type: "เลข2ตัวบนจ่ายครึ่ง",
+                reward: won
+              });
+              reward += won;
+            } else {
+              let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_two_number;
+              bill_win.push({
+                number: this.billsList[b].item_buy[i].number,
+                price: this.billsList[b].item_buy[i].upper,
+                type: "เลข2ตัวบน",
+                reward: won
+              });
+              reward += won;
+            }
 
           }
         } else if (this.billsList[b].item_buy[i].number.length == 3) {
           //three number
           if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.first.substr(3, 6)) {
-              if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
-                let won: number = (this.billsList[b].item_buy[i].upper / 2) * customer.pay_rate_three_straight;
-                bill_win.push({
-                  number: this.billsList[b].item_buy[i].number,
-                  price: this.billsList[b].item_buy[i].upper,
-                  type: "3ตัวตรงจ่ายครึ่ง",
-                  reward: won
-                });
-                reward += won;
-              } else {
-                let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_three_straight;
-                bill_win.push({
-                  number: this.billsList[b].item_buy[i].number,
-                  price: this.billsList[b].item_buy[i].upper,
-                  type: "3ตัวตรง",
-                  reward: won
-                });
-                reward += won;
-              }
+            if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
+              let won: number = (this.billsList[b].item_buy[i].upper / 2) * customer.pay_rate_three_straight;
+              bill_win.push({
+                number: this.billsList[b].item_buy[i].number,
+                price: this.billsList[b].item_buy[i].upper,
+                type: "3ตัวตรงจ่ายครึ่ง",
+                reward: won
+              });
+              reward += won;
+            } else {
+              let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_three_straight;
+              bill_win.push({
+                number: this.billsList[b].item_buy[i].number,
+                price: this.billsList[b].item_buy[i].upper,
+                type: "3ตัวตรง",
+                reward: won
+              });
+              reward += won;
+            }
 
 
           } else if (this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3f1 ||
@@ -372,69 +372,70 @@ export class BillsComponent implements OnInit {
             this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3b1 ||
             this.billsList[b].item_buy[i].number == this.installmentNow?.award?.last3b2) {
             if (this.billsList[b].item_buy[i].upper != 0) {
-                if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
-                  let won: number = (this.billsList[b].item_buy[i].upper / 2) * customer.pay_rate_three_lower;
-                  bill_win.push({
-                    number: this.billsList[b].item_buy[i].number,
-                    price: this.billsList[b].item_buy[i].upper,
-                    type: "3ตัวล่างจ่ายครึ่ง",
-                    reward: won
-                  });
-                  reward += won;
-                } else {
-                  let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_three_lower;
-                  bill_win.push({
-                    number: this.billsList[b].item_buy[i].number,
-                    price: this.billsList[b].item_buy[i].upper,
-                    type: "3ตัวล่าง",
-                    reward: won
-                  });
-                  reward += won;
-                }
-
-            }
-          } else {
-            let numLength1 = this.installmentNow?.award?.first.substr(3, 6)[0];
-            let numLength2 = this.installmentNow?.award?.first.substr(3, 6)[1];
-            let numLength3 = this.installmentNow?.award?.first.substr(3, 6)[2];
-
-            let threeSwapNumber1 = numLength1.concat(numLength2).concat(numLength3);
-            let threeSwapNumber2 = numLength2.concat(numLength1).concat(numLength3);
-            let threeSwapNumber3 = numLength3.concat(numLength2).concat(numLength1);
-            let threeSwapNumber4 = numLength1.concat(numLength3).concat(numLength2);
-            let threeSwapNumber5 = numLength2.concat(numLength3).concat(numLength1);
-            let threeSwapNumber6 = numLength3.concat(numLength1).concat(numLength2);
-            if (this.billsList[b].item_buy[i].number == threeSwapNumber1 ||
-              this.billsList[b].item_buy[i].number == threeSwapNumber2 ||
-              this.billsList[b].item_buy[i].number == threeSwapNumber3 ||
-              this.billsList[b].item_buy[i].number == threeSwapNumber4 ||
-              this.billsList[b].item_buy[i].number == threeSwapNumber5 ||
-              this.billsList[b].item_buy[i].number == threeSwapNumber6
-            ) {
-              if (this.billsList[b].item_buy[i].todd != 0) {
-                  if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
-                    let won: number = (this.billsList[b].item_buy[i].todd / 2) * customer.pay_rate_three_todd;
-                    bill_win.push({
-                      number: this.billsList[b].item_buy[i].number,
-                      price: this.billsList[b].item_buy[i].todd,
-                      type: "3ตัวโต๊สจ่ายครึ่ง",
-                      reward: won
-                    });
-                    reward += won;
-                  } else {
-                    let won: number = this.billsList[b].item_buy[i].todd * customer.pay_rate_three_todd;
-                    bill_win.push({
-                      number: this.billsList[b].item_buy[i].number,
-                      price: this.billsList[b].item_buy[i].todd,
-                      type: "3ตัวโต๊ส",
-                      reward: won
-                    });
-                    reward += won;
-                  }
-
+              if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
+                let won: number = (this.billsList[b].item_buy[i].upper / 2) * customer.pay_rate_three_lower;
+                bill_win.push({
+                  number: this.billsList[b].item_buy[i].number,
+                  price: this.billsList[b].item_buy[i].upper,
+                  type: "3ตัวล่างจ่ายครึ่ง",
+                  reward: won
+                });
+                reward += won;
+              } else {
+                let won: number = this.billsList[b].item_buy[i].upper * customer.pay_rate_three_lower;
+                bill_win.push({
+                  number: this.billsList[b].item_buy[i].number,
+                  price: this.billsList[b].item_buy[i].upper,
+                  type: "3ตัวล่าง",
+                  reward: won
+                });
+                reward += won;
               }
+
             }
           }
+
+          let numLength1 = this.installmentNow?.award?.first.substr(3, 6)[0];
+          let numLength2 = this.installmentNow?.award?.first.substr(3, 6)[1];
+          let numLength3 = this.installmentNow?.award?.first.substr(3, 6)[2];
+
+          let threeSwapNumber1 = numLength1.concat(numLength2).concat(numLength3);
+          let threeSwapNumber2 = numLength2.concat(numLength1).concat(numLength3);
+          let threeSwapNumber3 = numLength3.concat(numLength2).concat(numLength1);
+          let threeSwapNumber4 = numLength1.concat(numLength3).concat(numLength2);
+          let threeSwapNumber5 = numLength2.concat(numLength3).concat(numLength1);
+          let threeSwapNumber6 = numLength3.concat(numLength1).concat(numLength2);
+          if (this.billsList[b].item_buy[i].number == threeSwapNumber1 ||
+            this.billsList[b].item_buy[i].number == threeSwapNumber2 ||
+            this.billsList[b].item_buy[i].number == threeSwapNumber3 ||
+            this.billsList[b].item_buy[i].number == threeSwapNumber4 ||
+            this.billsList[b].item_buy[i].number == threeSwapNumber5 ||
+            this.billsList[b].item_buy[i].number == threeSwapNumber6
+          ) {
+            if (this.billsList[b].item_buy[i].todd != 0) {
+              if (this.checkHaftPay(this.billsList[b].item_buy[i].number)) {
+                let won: number = (this.billsList[b].item_buy[i].todd / 2) * customer.pay_rate_three_todd;
+                bill_win.push({
+                  number: this.billsList[b].item_buy[i].number,
+                  price: this.billsList[b].item_buy[i].todd,
+                  type: "3ตัวโต๊สจ่ายครึ่ง",
+                  reward: won
+                });
+                reward += won;
+              } else {
+                let won: number = this.billsList[b].item_buy[i].todd * customer.pay_rate_three_todd;
+                bill_win.push({
+                  number: this.billsList[b].item_buy[i].number,
+                  price: this.billsList[b].item_buy[i].todd,
+                  type: "3ตัวโต๊ส",
+                  reward: won
+                });
+                reward += won;
+              }
+
+            }
+          }
+
         }
 
         if (i == this.billsList[b].item_buy.length - 1) {
@@ -487,7 +488,7 @@ export class BillsComponent implements OnInit {
   checkHaftPay(number: any): boolean {
     const limited_pay_half = this.installmentNow.limited_pay_half
     for (let i = 0; i < limited_pay_half.length; i++) {
-      if(limited_pay_half[i].number == number){
+      if (limited_pay_half[i].number == number) {
         console.log("[checkHaftPay] true");
         return true
       }
@@ -495,7 +496,7 @@ export class BillsComponent implements OnInit {
     return false
     // limited_pay_half.find((limited_num: any) => {
     //   console.log("[checkHaftPay] number --> ", number + " limited_num --> "+ limited_num.number);
-      
+
     //   if(number == limited_num.number){
     //     console.log("[checkHaftPay] true");
     //     istrue = true
